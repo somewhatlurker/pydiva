@@ -1,0 +1,14 @@
+fontmap.farc: a self-generated AFT fontmap in a FArC archive
+fontmap_uncompressed.farc: fontmap.farc repacked using FarcPack
+fontmap.bin: extracted from fontmap.farc using FarcPack
+
+fontmap_fnm.farc: a self-generated X fontmap in a FArC archive
+fontmap_fnm_uncompressed.farc: fontmap_fnm.farc repacked using FarcPack
+fontmap_fnm_native.farc: fontmap_fnm.farc self-repacked as compressed and encrypted FARC
+fontmap.fnm: extracted from fontmap_fnm.farc using FarcPack
+
+fontmap_m39.farc: a self-generated M39s fontmap in a FArC archive
+fontmap_m39_uncompressed.farc: fontmap_m39.farc repacked using FarcPack
+fontmap_m39_native.farc: fontmap_m39.farc self-repacked as compressed and encrypted FT FARC
+fontmap_m39.bin: extracted from fontmap_m39.farc using FarcPack
+

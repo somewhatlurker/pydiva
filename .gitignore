@@ -1,0 +1,5 @@
+build/*
+dist/*
+pydiva.egg-info/*
+venv/*
+*.pyc
