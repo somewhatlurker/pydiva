@@ -28,7 +28,7 @@ def _needs_FT_decryption(s):
     format = s.read(4)
     
     # heuristic-based detection similar to MML
-    if encrypted and (format[:3] != b'\x00\x00\x00' or (format == b'\x00\x00\x00\x00' and alignment == b'\x00\x00\x00\x00'):
+    if encrypted and (format[:3] != b'\x00\x00\x00' or (format == b'\x00\x00\x00\x00' and alignment == b'\x00\x00\x00\x00')):
         s.seek(og_pos)
         return True
     
