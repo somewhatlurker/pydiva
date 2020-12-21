@@ -22,13 +22,18 @@ def _needs_FT_decryption(s):
     
     s.seek(og_pos + 16)
     alignment = s.read(4)
-    #alignment_bits_popcnt = sum([bin(x).count('1') for x in alignment])
+    alignment_bits_popcnt = sum([bin(x).count('1') for x in alignment])
     
     s.seek(og_pos + 20)
     format = s.read(4)
     
-    # heuristic-based detection similar to MML
-    if encrypted and (format[:3] != b'\x00\x00\x00' or (format == b'\x00\x00\x00\x00' and alignment == b'\x00\x00\x00\x00')):
+    # heuristic-based detection similar to MML -- this should have a false negative rate of ~1 in 4.8b (compared to MML's ~1 in 134.2m)
+    # false positives will require either more than 8 bits set in popcnt (extremely unlikely) or a new subformat which would be unsupported anyway
+    # if many bits (>8) are set in alignment, it seems incorrect -- likely encrypted (~1 in 285 false negative)
+    # if format doesn't start with null bytes, it seems incorrect -- likely encrypted (~1 in 16.8m false negative)
+    # if the entire 16 bytes are null, it indicates a null IV and definite encryption (or a bad file)
+    s.seek(og_pos + 16) # prepare for reading entire IV
+    if encrypted and (alignment_bits_popcnt > 8 or format[:3] != b'\x00\x00\x00' or s.read(16) == b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'):
         s.seek(og_pos)
         return True
     
