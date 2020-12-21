@@ -13,6 +13,7 @@ from pydiva.pyfarc_ft_helpers import _is_FT_FARC, _decrypt_FT_FARC_header, _encr
 
 try:
     from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad
     _crypto_installed = True
 except Exception:
     _crypto_installed = False
@@ -66,13 +67,13 @@ def _prep_files(files, alignment, farc_type, flags):
             
             data = info['data']
             
-            while len(data) % 16:
-                data += b'\x00'
-            
             if farc_type['encryption_type'] == 'DT':
+                while len(data) % 16:
+                    data += b'\x00'
                 cipher = AES.new(b'project_diva.bin', AES.MODE_ECB)
                 data = cipher.encrypt(data)
             elif farc_type['encryption_type'] == 'FT':
+                data = pad(data, 16, 'pkcs7')
                 if getenv('PYFARC_NULL_IV'):
                     iv = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
                 else:

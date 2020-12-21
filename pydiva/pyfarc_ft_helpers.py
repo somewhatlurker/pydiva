@@ -8,6 +8,7 @@ from os import getenv
 
 try:
     from Crypto.Cipher import AES
+    from Crypto.Util.Padding import pad
 except Exception:
     pass # main pyfarc module already handles this
 
@@ -109,15 +110,17 @@ def _encrypt_FT_FARC_header(instream, outstream):
     old_header_size = int.from_bytes(instream.read(4), byteorder='big', signed=False)
     new_header_size = old_header_size - 8 # temporarily remove stuff that isn't encrypted
     new_header_size += 16 # iv seems to count towards header size
-    if new_header_size % 16: new_header_size += 16 - (new_header_size % 16) # pad for AES
+    new_header_size += 16 - (new_header_size % 16) # space for AES padding
     new_header_size += 8 # add size of plaintext parts back
     
     outstream.write(new_header_size.to_bytes(4, byteorder='big', signed=False))
     outstream.write(instream.read(8)) # other plaintext header stuff
     
     header_data = instream.read(old_header_size - 8) # header_size is 8 bytes longer than encrypted portion
-    while len(header_data) != new_header_size - 16 - 8: # 16 is for IV, 8 is for plaintext part of header
-        header_data += b'\x00'
+    header_data = pad(header_data, 16, 'pkcs7')
+    
+    if new_header_size != len(header_data) + 16 + 8: # 16 is for IV, 8 is for plaintext part of header
+        raise Exception('Header size calc is bugged! Please report this! actual: {}, expected: {}'.format(len(header_data) + 16 + 8, new_header_size))
     
     if getenv('PYFARC_NULL_IV'):
         iv = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
