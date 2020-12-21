@@ -1,6 +1,6 @@
 import unittest
 from os import listdir, environ
-from os.path import join as joinpath
+from os.path import join as joinpath, dirname
 import json
 import hashlib
 from pydiva import pyfarc
@@ -43,15 +43,16 @@ def farc_bytes_from_files(files, farc_type, alignment=16, compress=True, encrypt
     
     return pyfarc.to_bytes(farc, no_copy=True)
 
+module_dir = dirname(__file__)
 
-with open('data/checksums.json', 'r') as f:
+with open(joinpath(module_dir, 'data', 'checksums.json'), 'r') as f:
     checksums = json.load(f)
 
 #for f, c in checksums.items():
 #    checksums[f] = bytes.fromhex(c)
 
 
-customdata = files_from_dir('data/customdata')
+customdata = files_from_dir(joinpath(module_dir, 'data', 'customdata'))
 
 
 class TestFarcPacking(unittest.TestCase):
@@ -99,7 +100,7 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(f, customdata)
     
     def test_fontmap_aft(self):
-        file = files_from_dir('data/fontmap_aft')
+        file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_aft'))
         b = farc_bytes_from_files(file, 'FArC', 1) # accidentally generated this with alignment 1
         c = hashlib.sha1(b).hexdigest()
         self.assertEqual(c, checksums['fontmap_aft.farc'])
@@ -107,7 +108,7 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(f, file)
     
     def test_fontmap_m39(self):
-        file = files_from_dir('data/fontmap_m39')
+        file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_m39'))
         b = farc_bytes_from_files(file, 'FARC_FT', 16, True, True)
         c = hashlib.sha1(b).hexdigest()
         self.assertEqual(c, checksums['fontmap_m39.farc'])
@@ -115,7 +116,7 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(f, file)
     
     def test_fontmap_x(self):
-        file = files_from_dir('data/fontmap_x')
+        file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_x'))
         b = farc_bytes_from_files(file, 'FARC', 16, True, True)
         c = hashlib.sha1(b).hexdigest()
         self.assertEqual(c, checksums['fontmap_x.farc'])

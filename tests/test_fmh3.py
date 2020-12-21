@@ -1,4 +1,5 @@
 import unittest
+from os.path import join as joinpath, dirname
 import json
 import hashlib
 from pydiva import pyfarc, pyfmh3
@@ -16,24 +17,26 @@ def fmh_from_file(path):
     with open(path, 'rb') as f:
         return pyfmh3.from_stream(f)
 
-with open('data/fontmap_ref_json.farc', 'rb') as f:
-    refdata = files_dict_from_farc_stream(f)
+module_dir = dirname(__file__)
 
-with open('data/checksums.json', 'r') as f:
+with open(joinpath(module_dir, 'data', 'checksums.json'), 'r') as f:
     checksums = json.load(f)
+
+with open(joinpath(module_dir, 'data', 'fontmap_ref_json.farc'), 'rb') as f:
+    refdata = files_dict_from_farc_stream(f)
 
 
 class TestFmhRead(unittest.TestCase):
     def test_read_aft(self):
-        fmh = fmh_from_file('data/fontmap_aft/fontmap.bin')
+        fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_aft', 'fontmap.bin'))
         self.assertEqual(fmh, json.loads(refdata['fontmap_aft.json']))
     
     def test_read_m39(self):
-        fmh = fmh_from_file('data/fontmap_m39/fontmap.bin')
+        fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_m39', 'fontmap.bin'))
         self.assertEqual(fmh, json.loads(refdata['fontmap_m39.json']))
     
     def test_read_x(self):
-        fmh = fmh_from_file('data/fontmap_x/fontmap.fnm')
+        fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_x', 'fontmap.fnm'))
         self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
 
 class TestFmhWrite(unittest.TestCase):
