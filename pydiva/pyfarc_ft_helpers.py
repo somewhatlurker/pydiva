@@ -8,7 +8,7 @@ from os import getenv
 
 try:
     from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad
+    from Crypto.Util.Padding import pad, unpad
 except Exception:
     pass # main pyfarc module already handles this
 
@@ -76,13 +76,16 @@ def _decrypt_FT_FARC_header(s):
     out.write(s.read(4)) # signature
     
     old_header_size = int.from_bytes(s.read(4), byteorder='big', signed=False)
-    new_header_size = old_header_size - 16 # iv seems to count towards header size
-    
-    out.write(new_header_size.to_bytes(4, byteorder='big', signed=False))
-    out.write(s.read(8)) # other plaintext header stuff
+    other_plaintext_header = s.read(8) # other plaintext header stuff
     
     cipher = AES.new(b'\x13\x72\xD5\x7B\x6E\x9E\x31\xEB\xA2\x39\xB8\x3C\x15\x57\xC6\xBB', AES.MODE_CBC, iv=s.read(16))
-    out.write(cipher.decrypt(s.read(old_header_size - 16 - 8))) # 16 is for IV, 8 is for plaintext part of header
+    header_data = cipher.decrypt(s.read(old_header_size - 16 - 8)) # 16 is for IV, 8 is for plaintext part of header
+    header_data = unpad(header_data, 16, 'pkcs7')
+    new_header_size = len(header_data) + 8
+    
+    out.write(new_header_size.to_bytes(4, byteorder='big', signed=False))
+    out.write(other_plaintext_header)
+    out.write(header_data)
     
     # resync streams (read old_header_size but wrote new_header_size)
     out.seek(out.tell() + old_header_size - new_header_size)
