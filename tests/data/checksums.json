@@ -7,6 +7,9 @@
     "customdata_c_e.FARC_FT": "d82eda8601ab129efa947d3063087e7a19c33dc8",
     "fontmap_aft.farc": "534632f0a465188f4958e85c0f701810a71ffa37",
     "fontmap_m39.farc": "1facdf63b22ccdfa2efa849aab764dea7f1cfd2e",
-    "fontmap_x.farc": "28179d39e33694c7aa114a09b9f2d2aab7a7ec9c",
-    "fontmap_ref_json.farc": "95bb8cad4ad830a15981c39d4bf4f4d09e646e08"
+    "fontmap_x.farc": "61d09d02ad0cf585b2f2bbaeca9faa31e65f5a00",
+    "fontmap_ref_json.farc": "95bb8cad4ad830a15981c39d4bf4f4d09e646e08",
+    "fontmap_aft.bin": "2c45b112cc3b9a677db36c4f85ffbde1bbac14c3",
+    "fontmap_m39.bin": "44338cd5feb0092a998892551c4750b5bf3d3235",
+    "fontmap_x.fnm": "26ecd9d0638b5a411ae24930968e21d50a710136"
 }

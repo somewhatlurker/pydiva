@@ -11,4 +11,4 @@ fontmap_m39.farc: fontmap_m39 packed into a compressed and encrypted FT FARC
 fontmap_ref_json.farc: reference json with indent=1 for all fontmaps (in FArC for compression)
 
 
-checksums.json: SHA1 sums of all farcs, including customdata packed to all kinds of farc.
+checksums.json: SHA1 sums of all farcs and fontmap data, including customdata packed to all kinds of farc.
