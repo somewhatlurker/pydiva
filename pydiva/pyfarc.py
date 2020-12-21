@@ -331,16 +331,17 @@ def from_bytes(b):
 
 if __name__ == '__main__':
     from os.path import dirname, exists as pathexists, isfile, splitext, join as joinpath, basename
-    from os import listdir, makedirs, remove as removefile
+    from os import listdir, makedirs, remove as removefile, environ
     import argparse
     
     def get_args():
         parser = argparse.ArgumentParser(description='pyfarc')
         
         parser.add_argument('-t', '--type', default='FArC', choices=['FArc', 'FArC', 'FARC', 'FARC_FT'], help='type of farc')
-        parser.add_argument('-c', '--compress', action='store_true', help='compress output (only for FArC, FARC, FARC_FT types)')
+        parser.add_argument('-c', '--compress', action='store_true', help='compress output (only for FARC, FARC_FT types)')
         parser.add_argument('-e', '--encrypt', action='store_true', help='encrypt output (only for FARC, FARC_FT types)')
         parser.add_argument('-a', '--alignment', default='16', help='output farc alignment')
+        parser.add_argument('--null_iv', action='store_true', help='use null encryption IVs (only for encrypted FARC_FT)')
         parser.add_argument('-f', '--force', action='store_true', help='force overwrite existing files/directories')
         parser.add_argument('input', default=None, help='input farc to extract or directory to archive')
 
@@ -390,7 +391,7 @@ if __name__ == '__main__':
         print ('Building farc from directory "{}"'.format(args.input))
         
         farc = {
-            'farc_type': args.type,
+            'farc_type': 'FARC' if args.type == 'FARC_FT' else args.type,
             'format': 1 if args.type == 'FARC_FT' else 0,
             'alignment': int(args.alignment),
             'flags': {
@@ -417,6 +418,11 @@ if __name__ == '__main__':
             if not isfile(out_path):
                 print ('Can\'t output because "{}" is a directory, not a file.'.format(out_path))
                 exit(1)
+        
+        if args.null_iv:
+            environ['PYFARC_NULL_IV'] = '1'
+        elif 'PYFARC_NULL_IV' in environ:
+            del environ['PYFARC_NULL_IV']
         
         with open(out_path, 'wb') as f:
             to_stream(farc, f)
