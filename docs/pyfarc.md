@@ -85,3 +85,12 @@ Use `python -m pydiva.pyfarc` to run it.
 
 If input is a directory, a farc archive with the same name will be created.  
 If input is a file, the farc archive will be extracted to a directory with the same name.
+
+　
+
+## Development Info
+Yep, so farc is actually four distinct formats. Fortunately they're all pretty basic.
+Structs from `pydiva/pyfarc_formats.py` are probably the closest thing to documentation, but MikuMikuModel is good for
+reference too.
+`pydiva/pyfarc_ft_helpers.py` is worth special mention as FARC type detection and FT header encryption/decryption is
+handled there rather than in a generic way. (honestly, it'd be a pain to do it generically within construct)

@@ -64,3 +64,11 @@ Setting `no_copy` provides a speedup and memory usage reduction, but the input w
 created during processing. Only enable this if you won't reuse the dictionary.
 
 `pyfmh3.UnsupportedFmh3TypeException` will be raised if the fmh3_type is unknown.
+
+　
+
+## Development Info
+FMH3 format for FT series games is described in `docs/fmh3_format.txt`, but the Struct in `pydiva/pyfmh3_formats.py` is
+probably just as easy to understand.
+X is similar but some fields become 64 bits long and it's encapsulated in an F2nd/X style file with FONM magic.  
+MikuMikuModel serves as a good reference for how the sectioned F2nd/X files work.

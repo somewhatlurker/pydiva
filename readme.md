@@ -15,5 +15,10 @@ See `docs/pyfmh3.md` for usage.
 
 　
 
-## Tests
+## Development Info
+License is MIT so do whatever you want, but I'd personally prefer if we avoid forks for now.
+
+Format-specific info is in the relevant docs.
+
+### Tests
 Run `python -m unittest` from the root directory.
