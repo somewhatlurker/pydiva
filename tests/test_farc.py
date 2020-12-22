@@ -4,6 +4,7 @@ from os.path import join as joinpath, dirname
 import json
 import hashlib
 from pydiva import pyfarc
+from pydiva.farc_load_helper import farc_load_helper
 
 environ['PYFARC_NULL_IV'] = '1'
 
@@ -127,4 +128,24 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(c, checksums['fontmap_x.farc'])
         f = files_from_farc_bytes(b)
         self.assertEqual(f, file)
+
+
+class TestFarcHelper(unittest.TestCase):
     
+    def test_farc_helper_success(self):
+        dir_file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_aft'))
+        with open(joinpath(module_dir, 'data', 'fontmap_aft.farc'), 'rb') as f:
+            farc_file = farc_load_helper(f, ['fontmap.bin'])
+        self.assertEqual(farc_file, dir_file)
+    
+    def test_farc_helper_fail_missing_file(self):
+        with open(joinpath(module_dir, 'data', 'fontmap_aft.farc'), 'rb') as f:
+            farc_file = farc_load_helper(f, ['dummy.bin'])
+        self.assertEqual(farc_file, [])
+    
+    def test_farc_helper_fail_not_farc(self):
+        with open(joinpath(module_dir, 'data', 'files.txt'), 'rb') as f:
+            farc_file = farc_load_helper(f, ['dummy.bin'])
+            f.seek(0)
+            original_bytes = f.read()
+        self.assertEqual(farc_file, [(None, original_bytes)])
