@@ -5,13 +5,13 @@ with open("readme.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="pydiva",
-    version="0.0.1",
+    version="1.0.0",
     author="somewhatlurker",
     description="Some stuff for handling files from Project DIVA games",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/somewhatlurker/pydiva",
-    packages=setuptools.find_packages(),
+    packages=['pydiva'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
