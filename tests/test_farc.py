@@ -3,10 +3,13 @@ from os import listdir, environ
 from os.path import join as joinpath, dirname
 import json
 import hashlib
+from collections import namedtuple
 from pydiva import pyfarc
 from pydiva.farc_load_helper import farc_load_helper
 
 environ['PYFARC_NULL_IV'] = '1'
+
+cli_args = namedtuple('args', ['type', 'compress', 'encrypt', 'alignment', 'null_iv', 'force', 'silent', 'input'])
 
 def files_from_dir(path):
     """Returns list of (filename, bytes) tuples containing all files in path."""
@@ -149,3 +152,30 @@ class TestFarcHelper(unittest.TestCase):
             f.seek(0)
             original_bytes = f.read()
         self.assertEqual(farc_file, [(None, original_bytes)])
+
+
+class TestFarcCli(unittest.TestCase):
+    
+    def test_pack_basic(self):
+        a = cli_args(type='FARC_FT', compress=False, encrypt=False, alignment='16', null_iv=True, force=True, silent=True, input=joinpath(module_dir, 'data', 'cli_pack'))
+        pyfarc._main(a)
+        with open(joinpath(module_dir, 'data', 'cli_pack.farc'), 'rb') as f:
+            b = f.read()
+        c = hashlib.sha1(b).hexdigest()
+        self.assertEqual(c, checksums['cli_pack.farc'])
+    
+    def test_pack_c_e(self):
+        a = cli_args(type='FARC_FT', compress=True, encrypt=True, alignment='16', null_iv=True, force=True, silent=True, input=joinpath(module_dir, 'data', 'cli_pack_c_e'))
+        pyfarc._main(a)
+        with open(joinpath(module_dir, 'data', 'cli_pack_c_e.farc'), 'rb') as f:
+            b = f.read()
+        c = hashlib.sha1(b).hexdigest()
+        self.assertEqual(c, checksums['cli_pack_c_e.farc'])
+    
+    def test_unpack(self):
+        a = cli_args(type='FArC', compress=False, encrypt=False, alignment='16', null_iv=False, force=True, silent=True, input=joinpath(module_dir, 'data', 'cli_unpack.farc'))
+        pyfarc._main(a)
+        with open(joinpath(module_dir, 'data', 'cli_unpack', 'fontmap.bin'), 'rb') as f:
+            b = f.read()
+        c = hashlib.sha1(b).hexdigest()
+        self.assertEqual(c, checksums['fontmap_aft.bin'])

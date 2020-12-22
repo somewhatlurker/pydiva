@@ -11,5 +11,8 @@
     "fontmap_ref_json.farc": "95bb8cad4ad830a15981c39d4bf4f4d09e646e08",
     "fontmap_aft.bin": "2c45b112cc3b9a677db36c4f85ffbde1bbac14c3",
     "fontmap_m39.bin": "44338cd5feb0092a998892551c4750b5bf3d3235",
-    "fontmap_x.fnm": "26ecd9d0638b5a411ae24930968e21d50a710136"
+    "fontmap_x.fnm": "26ecd9d0638b5a411ae24930968e21d50a710136",
+    "cli_pack.farc": "86f71e388bc1f0c4de0871cd25bc7260a3732ce8",
+    "cli_pack_c_e.farc": "c0afe3b3e2aa1fc9e0c61988fd30ce65bfe6b783",
+    "cli_unpack.farc": "86f71e388bc1f0c4de0871cd25bc7260a3732ce8"
 }

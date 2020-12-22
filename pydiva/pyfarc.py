@@ -330,32 +330,19 @@ def from_bytes(b):
 #with open('fontmap_out.farc', 'wb') as f:
 #    to_stream(fontmapfarc, f, alignment=1, no_copy=True)
 
-if __name__ == '__main__':
+
+def _main(args):
+    """main func for command line"""
+    
     from os.path import dirname, exists as pathexists, isfile, splitext, join as joinpath, basename
     from os import listdir, makedirs, remove as removefile, environ
-    import argparse
-    
-    def get_args():
-        parser = argparse.ArgumentParser(description='pyfarc')
-        
-        parser.add_argument('-t', '--type', default='FArC', choices=['FArc', 'FArC', 'FARC', 'FARC_FT'], help='type of farc')
-        parser.add_argument('-c', '--compress', action='store_true', help='compress output (only for FARC, FARC_FT types)')
-        parser.add_argument('-e', '--encrypt', action='store_true', help='encrypt output (only for FARC, FARC_FT types)')
-        parser.add_argument('-a', '--alignment', default='16', help='output farc alignment')
-        parser.add_argument('--null_iv', action='store_true', help='use null encryption IVs (only for encrypted FARC_FT)')
-        parser.add_argument('-f', '--force', action='store_true', help='force overwrite existing files/directories')
-        parser.add_argument('input', default=None, help='input farc to extract or directory to archive')
-
-        return parser.parse_args()
-
-    args = get_args()
     
     if not args.input:
-        print ('No input specified.')
+        if not args.silent: print ('No input specified.')
         exit(1)
 
     if not pathexists(args.input):
-        print ('Can\'t find file or directory "{}"'.format(args.input))
+        if not args.silent: print ('Can\'t find file or directory "{}"'.format(args.input))
         exit(1)
     
     if isfile(args.input):
@@ -364,7 +351,7 @@ if __name__ == '__main__':
             for f in files:
                 removefile(joinpath(d, f))
         
-        print ('Extracting "{}" to directory'.format(args.input))
+        if not args.silent: print ('Extracting "{}" to directory'.format(args.input))
         
         with open(args.input, 'rb') as f:
             farc = from_stream(f)
@@ -375,10 +362,10 @@ if __name__ == '__main__':
         
         if pathexists(out_dir):
             if not args.force:
-                print ('"{}" already exists. Use -f/--force to overwrite it.'.format(out_dir))
+                if not args.silent: print ('"{}" already exists. Use -f/--force to overwrite it.'.format(out_dir))
                 exit(1)
             if isfile(out_dir):
-                print ('Can\'t output because "{}" is a file, not a directory.'.format(out_dir))
+                if not args.silent: print ('Can\'t output because "{}" is a file, not a directory.'.format(out_dir))
                 exit(1)
             clean_dir(out_dir)
         else:
@@ -389,7 +376,7 @@ if __name__ == '__main__':
                 f.write(info['data'])
             
     else:
-        print ('Building farc from directory "{}"'.format(args.input))
+        if not args.silent: print ('Building farc from directory "{}"'.format(args.input))
         
         farc = {
             'farc_type': 'FARC' if args.type == 'FARC_FT' else args.type,
@@ -414,10 +401,10 @@ if __name__ == '__main__':
         
         if pathexists(out_path):
             if not args.force:
-                print ('"{}" already exists. Use -f/--force to overwrite it.'.format(out_path))
+                if not args.silent: print ('"{}" already exists. Use -f/--force to overwrite it.'.format(out_path))
                 exit(1)
             if not isfile(out_path):
-                print ('Can\'t output because "{}" is a directory, not a file.'.format(out_path))
+                if not args.silent: print ('Can\'t output because "{}" is a directory, not a file.'.format(out_path))
                 exit(1)
         
         if args.null_iv:
@@ -427,3 +414,26 @@ if __name__ == '__main__':
         
         with open(out_path, 'wb') as f:
             to_stream(farc, f)
+
+
+if __name__ == '__main__':
+    from os.path import dirname, exists as pathexists, isfile, splitext, join as joinpath, basename
+    from os import listdir, makedirs, remove as removefile, environ
+    import argparse
+    
+    def get_args():
+        parser = argparse.ArgumentParser(description='pyfarc')
+        
+        parser.add_argument('-t', '--type', default='FArC', choices=['FArc', 'FArC', 'FARC', 'FARC_FT'], help='type of farc')
+        parser.add_argument('-c', '--compress', action='store_true', help='compress output (only for FARC, FARC_FT types)')
+        parser.add_argument('-e', '--encrypt', action='store_true', help='encrypt output (only for FARC, FARC_FT types)')
+        parser.add_argument('-a', '--alignment', default='16', help='output farc alignment')
+        parser.add_argument('--null_iv', action='store_true', help='use null encryption IVs (only for encrypted FARC_FT)')
+        parser.add_argument('-f', '--force', action='store_true', help='force overwrite existing files/directories')
+        parser.add_argument('-s', '--silent', action='store_true', help='disable command line output')
+        parser.add_argument('input', default=None, help='input farc to extract or directory to archive')
+
+        return parser.parse_args()
+
+    _main(get_args())
+    

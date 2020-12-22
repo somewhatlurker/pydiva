@@ -11,4 +11,13 @@ fontmap_m39.farc: fontmap_m39 packed into a compressed and encrypted FT FARC
 fontmap_ref_json.farc: reference json with indent=1 for all fontmaps (in FArC for compression)
 
 
+customdata: some files to use for testing packing and unpacking
+            farcs not included to save space
+
+
+cli_pack:     copy of aft fontmap (in FT FARC) for pyfarc CLI tests to pack to
+cli_pack_c_e: copy of aft fontmap (in compressed and encrypted FT FARC) for pyfarc CLI tests to pack to
+cli_unpack:   same as cli_pack for CLI tests to unpack from
+
+
 checksums.json: SHA1 sums of all farcs and fontmap data, including customdata packed to all kinds of farc.
