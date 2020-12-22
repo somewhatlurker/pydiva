@@ -1,1 +1,0 @@
-To run tests: `python -m unittest farc.py`
