@@ -57,6 +57,9 @@ customdata = files_from_dir(joinpath(module_dir, 'data', 'customdata'))
 
 class TestFarcPacking(unittest.TestCase):
     
+    # customdata tests ensure that archiving files, then unarchiving the results works correctly
+    # (or at least with no regressions)
+    
     def test_customdata_FArc(self):
         b = farc_bytes_from_files(customdata, 'FArc', 16)
         c = hashlib.sha1(b).hexdigest()
@@ -98,6 +101,8 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(c, checksums['customdata_c_e.FARC_FT'])
         f = files_from_farc_bytes(b)
         self.assertEqual(f, customdata)
+    
+    # fontmap tests are pretty much like customdata tests, but compare against known-good files that games can read
     
     def test_fontmap_aft(self):
         file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_aft'))
