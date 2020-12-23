@@ -57,6 +57,11 @@ with open(joinpath(module_dir, 'data', 'checksums.json'), 'r') as f:
 
 
 customdata = files_from_dir(joinpath(module_dir, 'data', 'customdata'))
+for i in range(0, len(customdata)):
+    if customdata[i][0].endswith('.txt') and not b'\x0d\x0a' in customdata[i][1]:
+        customdata[i] = (customdata[i][0], customdata[i][1].replace(b'\x0a', b'\x0d\x0a'))
+    while customdata[i][1].endswith(b'\x0d\x0a'):
+        customdata[i] = (customdata[i][0], customdata[i][1][:-2])
 
 
 class TestFarcPacking(unittest.TestCase):
