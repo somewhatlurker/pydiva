@@ -41,6 +41,9 @@ with open('test.farc', 'rb') as f:
 
 `pyfarc.UnsupportedFarcTypeException` will be raised if the supplied file is not a known farc type.
 
+Setting the argument `files_whitelist` to a list of strings will make `from_stream` and `from_bytes` return a
+dictionary that only contains files with names in the whitelist.
+
 
 `pydiva.farc_load_helper.farc_load_helper` can be used to quickly get the content of a list of filenames from a farc.  
 If not a supported farc, the original file's content will be returned as a nameless file so you can read it directly.  

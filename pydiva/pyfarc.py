@@ -207,8 +207,11 @@ def to_bytes(data, no_copy=False):
         return s.getvalue()
 
 
-def _parsed_to_dict(farcdata, farc_type):
-    """Converts the raw construct data to our standard dictionary format."""
+def _parsed_to_dict(farcdata, farc_type, files_whitelist=None):
+    """
+    Converts the raw construct data to our standard dictionary format.
+    Setting files_whitelist will return a dictionary that only contains files with names in the whitelist.
+    """
     
     files = {}
     
@@ -216,6 +219,9 @@ def _parsed_to_dict(farcdata, farc_type):
         flags = farcdata['flags']
         
         for f in farcdata['files']:
+            if files_whitelist and not f['name'] in files_whitelist:
+                continue
+            
             data = f['data']
             
             if farc_type['has_per_file_flags']:
@@ -242,6 +248,9 @@ def _parsed_to_dict(farcdata, farc_type):
     
     elif farc_type['compression_support']:
         for f in farcdata['files']:
+            if files_whitelist and not f['name'] in files_whitelist:
+                continue
+            
             data = f['data']
             
             if farc_type['compression_forced'] or (f['uncompressed_size'] != f['compressed_size']):
@@ -251,6 +260,9 @@ def _parsed_to_dict(farcdata, farc_type):
     
     else:
         for f in farcdata['files']:
+            if files_whitelist and not f['name'] in files_whitelist:
+                continue
+            
             data = f['data']
             files[f['name']] = {'data': data}
     
@@ -262,8 +274,11 @@ def _parsed_to_dict(farcdata, farc_type):
         out['format'] = farcdata['format']
     return out
 
-def from_stream(s):
-    """Converts farc data from a stream to a dictionary."""
+def from_stream(s, files_whitelist=None):
+    """
+    Converts farc data from a stream to a dictionary.
+    Setting files_whitelist will return a dictionary that only contains files with names in the whitelist.
+    """
     
     pos = s.tell()
     magic_str = s.read(4).decode('ascii')
@@ -284,13 +299,16 @@ def from_stream(s):
     if close_ft_stream: # explicitly close BytesIO from FT decryption if one was opened
         s.close()
     
-    return _parsed_to_dict(farcdata, farc_type)
+    return _parsed_to_dict(farcdata, farc_type, files_whitelist)
 
-def from_bytes(b):
-    """Converts farc data from bytes to a dictionary."""
+def from_bytes(b, files_whitelist=None):
+    """
+    Converts farc data from bytes to a dictionary.
+    Setting files_whitelist will return a dictionary that only contains files with names in the whitelist.
+    """
     
     with BytesIO(b) as s:
-        return from_stream(s)
+        return from_stream(s, files_whitelist)
 
 
 #test_farc = {'farc_type': 'FArc', 'files': {'aaa': {'data': b'test1'}, 'bbb': {'data': b'test2'}, 'ccc': {'data': b'aaaaaaaaaaaaaaaaaaaaaaaa'}}, 'alignment': 16}
