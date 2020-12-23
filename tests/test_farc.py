@@ -63,6 +63,7 @@ class TestFarcPacking(unittest.TestCase):
     
     # customdata tests ensure that archiving files, then unarchiving the results works correctly
     # (or at least with no regressions)
+    # no need to test to/from stream because the bytes methods internally use them already
     
     def test_customdata_FArc(self):
         b = farc_bytes_from_files(customdata, 'FArc', 16)
@@ -131,6 +132,66 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(c, checksums['fontmap_x.farc'])
         f = files_from_farc_bytes(b)
         self.assertEqual(f, file)
+
+
+class TestFarcFlags(unittest.TestCase):
+    
+    def test_FARC_flags_false(self):
+        farc = {'farc_type': 'FARC', 'files': {'a': {'data': b'a'}, 'b': {'data': b'b'}, 'c': {'data': b'cccccccccccccccccccccccc'}}}
+        res = pyfarc.from_bytes(pyfarc.to_bytes(farc))
+        self.assertFalse(res['flags']['encrypted'])
+        self.assertFalse(res['flags']['compressed'])
+    
+    def test_FARC_flags_true(self):
+        farc = {'farc_type': 'FARC', 'files': {'a': {'data': b'a'}, 'b': {'data': b'b'}, 'c': {'data': b'cccccccccccccccccccccccc'}}, 'flags': {'encrypted': True, 'compressed': True}}
+        res = pyfarc.from_bytes(pyfarc.to_bytes(farc))
+        self.assertTrue(res['flags']['encrypted'])
+        self.assertTrue(res['flags']['compressed'])
+    
+    def test_FARC_FT_flags_false(self):
+        farc = {'farc_type': 'FARC', 'format': 1, 'files': {'a': {'data': b'a'}, 'b': {'data': b'b'}, 'c': {'data': b'cccccccccccccccccccccccc'}}}
+        res = pyfarc.from_bytes(pyfarc.to_bytes(farc))
+        self.assertFalse(res['flags']['encrypted'])
+        self.assertFalse(res['flags']['compressed'])
+    
+    def test_FARC_FT_flags_true(self):
+        farc = {'farc_type': 'FARC', 'format': 1, 'files': {'a': {'data': b'a'}, 'b': {'data': b'b'}, 'c': {'data': b'cccccccccccccccccccccccc'}}, 'flags': {'encrypted': True, 'compressed': True}}
+        res = pyfarc.from_bytes(pyfarc.to_bytes(farc))
+        self.assertTrue(res['flags']['encrypted'])
+        self.assertTrue(res['flags']['compressed'])
+    
+    def test_FARC_FT_flags_per_file(self):
+        farc = {'farc_type': 'FARC', 'format': 1, 'files': {'a': {'data': b'a'}, 'b': {'data': b'b', 'flags': {'encrypted': True}}, 'c': {'data': b'cccccccccccccccccccccccc', 'flags': {'encrypted': True, 'compressed': True}}}}
+        res = pyfarc.from_bytes(pyfarc.to_bytes(farc))
+        self.assertFalse(res['flags']['encrypted'])
+        self.assertFalse(res['flags']['compressed'])
+        self.assertFalse(res['files']['a']['flags']['encrypted'])
+        self.assertFalse(res['files']['a']['flags']['compressed'])
+        self.assertTrue(res['files']['b']['flags']['encrypted'])
+        self.assertFalse(res['files']['b']['flags']['compressed'])
+        self.assertTrue(res['files']['c']['flags']['encrypted'])
+        self.assertTrue(res['files']['c']['flags']['compressed'])
+
+
+class TestFarcLoadWhitelist(unittest.TestCase):
+    
+    # generate a farc from customdata, then read only zero-length to check whitelist is working
+    # there's three different versions of the loop, so test each with different farc types
+    
+    def test_farc_load_whitelist_has_flags(self):
+        b = farc_bytes_from_files(customdata, 'FARC', 16, False, False)
+        farc = pyfarc.from_bytes(b, files_whitelist=['zero-length'])
+        self.assertEqual(farc['files'], {'zero-length': {'data': b''}})
+    
+    def test_farc_load_whitelist_compression_support(self):
+        b = farc_bytes_from_files(customdata, 'FArC', 16, False, False)
+        farc = pyfarc.from_bytes(b, files_whitelist=['zero-length'])
+        self.assertEqual(farc['files'], {'zero-length': {'data': b''}})
+    
+    def test_farc_load_whitelist_default(self):
+        b = farc_bytes_from_files(customdata, 'FArc', 16, False, False)
+        farc = pyfarc.from_bytes(b, files_whitelist=['zero-length'])
+        self.assertEqual(farc['files'], {'zero-length': {'data': b''}})
 
 
 class TestFarcHelper(unittest.TestCase):
