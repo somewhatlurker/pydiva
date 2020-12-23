@@ -202,6 +202,11 @@ class TestFarcHelper(unittest.TestCase):
             farc_file = farc_load_helper(f, ['fontmap.bin'])
         self.assertEqual(farc_file, dir_file)
     
+    def test_farc_helper_success_multiple(self):
+        with open(joinpath(module_dir, 'data', 'fontmap_ref_json.farc'), 'rb') as f:
+            farc_file = farc_load_helper(f, ['fontmap_aft.json', 'fontmap_x.json'])
+        self.assertEqual(len(farc_file), 2)
+    
     def test_farc_helper_fail_missing_file(self):
         with open(joinpath(module_dir, 'data', 'fontmap_aft.farc'), 'rb') as f:
             farc_file = farc_load_helper(f, ['dummy.bin'])

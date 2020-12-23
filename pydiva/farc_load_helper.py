@@ -13,13 +13,12 @@ def farc_load_helper(s, filenames):
     """
     
     try:
-        farc = pyfarc.from_stream(s)
+        farc = pyfarc.from_stream(s, files_whitelist=filenames)
     except pyfarc.UnsupportedFarcTypeException:
         return [(None, s.read())]
     
     outlist = []
-    for fname in filenames:
-        if fname in farc['files']:
-            outlist += [(fname, farc['files'][fname]['data'])]
+    for fname, info in farc['files'].items():
+        outlist += [(fname, info['data'])]
     
     return outlist
