@@ -1,7 +1,7 @@
 pydiva
 ======
 
-Some python stuff for handling files from Project DIVA games.
+Some python (3.8+) stuff for handling files from Project DIVA games.
 
 
 ## pyfarc
