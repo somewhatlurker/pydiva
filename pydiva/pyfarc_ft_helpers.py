@@ -7,8 +7,8 @@ from secrets import token_bytes
 from os import getenv
 
 try:
-    from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad, unpad
+    from Cryptodome.Cipher import AES
+    from Cryptodome.Util.Padding import pad, unpad
 except Exception:
     pass # main pyfarc module already handles this
 

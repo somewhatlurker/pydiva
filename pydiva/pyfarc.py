@@ -12,11 +12,11 @@ from pydiva.pyfarc_formats import _farc_types
 from pydiva.pyfarc_ft_helpers import _is_FT_FARC, _decrypt_FT_FARC_header, _encrypt_FT_FARC_header
 
 try:
-    from Crypto.Cipher import AES
-    from Crypto.Util.Padding import pad
-    _crypto_installed = True
+    from Cryptodome.Cipher import AES
+    from Cryptodome.Util.Padding import pad
+    _cryptodome_installed = True
 except Exception:
-    _crypto_installed = False
+    _cryptodome_installed = False
 
 
 class UnsupportedFarcTypeException(Exception):
@@ -28,8 +28,8 @@ def check_farc_type(t):
     if not t in _farc_types:
         raise UnsupportedFarcTypeException("{} type not supported".format(t))
     
-    if _farc_types[t]['encryption_type'] and not _crypto_installed:
-        raise UnsupportedFarcTypeException("{} type only supported with Crypto module installed".format(t))
+    if _farc_types[t]['encryption_type'] and not _cryptodome_installed:
+        raise UnsupportedFarcTypeException("{} type only supported with Cryptodome module installed".format(t))
     
     return _farc_types[t]['remarks']
 
