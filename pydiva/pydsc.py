@@ -10,23 +10,37 @@ class UnsupportedDscGameException(Exception):
 class UnknownDscOpException(Exception):
     pass
 
-def _fix_param_types(param_values, param_info):
+def _fix_param_types(param_values, param_info, enum_dir='to_str'):
     """
     Corrects parameter types and resolves enums to strings for easier handling
     """
     
+    param_values = param_values.copy()
+    
     for i in range(len(param_values)):
+        if param_values[i] == '':
+            param_values[i] = 0
+        
         if param_info[i]:
             t = param_info[i]['type']
         else:
             t = int
         
         if t == 'enum':
-            v = int(param_values[i])
-            if v < 0 or v >= len(param_info[i]['enum_choices']):
-                raise KeyError('Invalid enum value {} for param {}'.format(v, param_info[i]['name']))
-            else:
-                param_values[i] = param_info[i]['enum_choices'][v]
+            if enum_dir == 'to_str':
+                v = int(param_values[i])
+                if v < 0 or v >= len(param_info[i]['enum_choices']):
+                    raise KeyError('Invalid enum value {} for param {}'.format(v, param_info[i]['name']))
+                else:
+                    param_values[i] = param_info[i]['enum_choices'][v]
+            elif enum_dir == 'from_str':
+                v = str(param_values[i])
+                try:
+                    param_values[i] = int(param_info[i]['enum_choices'].index(v))
+                except ValueError:
+                    raise KeyError('Invalid enum value {} for param {}'.format(v, param_info[i]['name']))
+            elif enum_dir != 'none':
+                raise ValueError('Invalid enum_dir: {}'.format(enum_dir))
         else:
             param_values[i] = t(param_values[i])
     
@@ -93,6 +107,20 @@ class DscOp:
     op_id = 0
     param_values = [] # length of param_values will be set correctly when using from_id, from_name, or from_string
     param_info = None
+    
+    def __eq__(x, y):
+        if not x.game == y.game:
+            return False
+        if not x.op_name == y.op_name:
+            return False
+        if not x.op_id == y.op_id:
+            return False
+        if not x.param_values == y.param_values:
+            return False
+        if not x.param_info == y.param_info:
+            return False
+        
+        return True
     
     def __init__(self, game, op_name, op_id, param_values, param_info):
         """Base init method for DscOp. Recommended to use from_id, from_name, or from_string instead."""
@@ -205,15 +233,15 @@ class DscOp:
                 pvalues += [0]
         
         if 'param_info' in op_game_info:
-            pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
+            pvalues = _fix_param_types(pvalues, op_game_info['param_info'], enum_dir='none')
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
+            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)], enum_dir='none')
         
         return self(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
     @classmethod
     def read_from_stream(self, game, s, endian='little'):
-        self = self.from_id(game, int.from_bytes(s.read(4), byteorder='little', signed=True))
+        self = self.from_id(game, int.from_bytes(s.read(4), byteorder=endian, signed=True))
         
         for i in range(0, len(self.param_values)):
             if self.param_info and self.param_info[i]:
@@ -224,12 +252,12 @@ class DscOp:
                 t = int
             
             if t == bool: # use to catch false assumptions about type
-                v = int.from_bytes(s.read(4), byteorder='little', signed=False)
+                v = int.from_bytes(s.read(4), byteorder=endian, signed=False)
                 if v > 1:
                     raise TypeError('{}\'s parameter {} is not a bool!'.format(self.name, self.param_info[i]['name']))
                 v = bool(v)
             else:
-                v = t.from_bytes(s.read(4), byteorder='little', signed=True)
+                v = t.from_bytes(s.read(4), byteorder=endian, signed=True)
             
             self.param_values[i] = v
         
@@ -237,6 +265,18 @@ class DscOp:
             self.param_values = _fix_param_types(self.param_values, self.param_info)
         
         return self
+    
+    
+    def write_to_stream(self, s, endian='little'):
+        if self.param_info:
+            pvalues = _fix_param_types(self.param_values, self.param_info, enum_dir='from_str')
+        else:
+            pvalues = self.param_values
+        
+        s.write(self.op_id.to_bytes(4, byteorder=endian, signed=True))
+        
+        for p in pvalues:
+            s.write(p.to_bytes(4, byteorder=endian, signed=True))
     
     
     def get_str(self, show_names=True):
@@ -262,6 +302,7 @@ class DscOp:
     def __repr__(self):
         return '<DscOp object ({}, {})>'.format(self.game, self.get_str(True))
 
+
 def from_stream(s):
     """AFT-only"""
     
@@ -277,6 +318,15 @@ def from_stream(s):
             break
     
     return out
+
+
+def to_stream(dsc, s):
+    """AFT-only"""
+    
+    s.write(b'\x21\x09\x05\x14\x41\x00\x00\x00\x00\x00\x00\x00') # header junk
+    
+    for op in dsc:
+        op.write_to_stream(s)
 
 def dsc_to_string(dsc):
     """Get a nice string representation of an entire DSC"""
