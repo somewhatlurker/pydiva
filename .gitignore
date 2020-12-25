@@ -3,3 +3,4 @@ dist/*
 pydiva.egg-info/*
 venv/*
 *.pyc
+copyright!/*
