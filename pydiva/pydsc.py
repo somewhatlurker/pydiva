@@ -218,19 +218,17 @@ class DscOp:
         
         param_cnt = op_game_info['param_cnt']
         
-        if 'param_info' in op_game_info:
-            param_values = _reorder_named_args(param_values, op_game_info['param_info'])
-        else:
-            param_values = _reorder_named_args(param_values, [None for i in range(0, param_cnt)])
-        
-        if param_values == None:
-            pvalues = [0 for i in range(0, param_cnt)]
-        elif len(param_values) > param_cnt:
+        if len(param_values) > param_cnt:
             pvalues = param_values[:param_cnt]
         else:
             pvalues = param_values
             while len(param_values) < param_cnt:
-                pvalues += [0]
+                pvalues += ['0']
+        
+        if 'param_info' in op_game_info:
+            param_values = _reorder_named_args(param_values, op_game_info['param_info'])
+        else:
+            param_values = _reorder_named_args(param_values, [None for i in range(0, param_cnt)])
         
         if 'param_info' in op_game_info:
             pvalues = _fix_param_types(pvalues, op_game_info['param_info'], enum_dir='none')

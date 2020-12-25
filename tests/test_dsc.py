@@ -105,6 +105,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_values, [0, 1, 2, 3])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
     
+    def test_op_from_string_sparse(self):
+        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=1, z=3)')
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 2)
+        self.assertEqual(op.op_name, 'MIKU_MOVE')
+        self.assertEqual(op.param_values, [1, 0, 0, 3])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+    
     def test_op_from_string_positional(self):
         op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(0, 1,2, 3)')
         self.assertEqual(op.game, 'FT')
