@@ -21,3 +21,6 @@ cli_unpack:   same as cli_pack for CLI tests to unpack from
 
 
 checksums.json: SHA1 sums of all farcs and fontmap data, including customdata packed to all kinds of farc.
+
+
+dsc_db.json: opcode_db from Open PD Script Editor
