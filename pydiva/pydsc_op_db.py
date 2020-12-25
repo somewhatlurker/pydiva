@@ -2,8 +2,12 @@
 list of dictionaries (one dict per opcode name)
 opcodes have name, optional description, and optional game-specific info dicts
 
-list of game-specific info dict keys:
-  info_A12, info_F2, info_FT, info_PSP1, info_PSP2, info_X, info_f
+info dicts have id, param_cnt, and optional param_info
+param_info is a list with len == param_cnt, where each element is a dict or None
+param_info dicts have name, desc, and type
+
+list of game-specific info dicts:
+  info_PDA, info_F2, info_FT, info_PSP1, info_PSP2, info_X, info_F
   (also info_default)
 
 use info_default if no info exists for the game you're parsing
@@ -25,7 +29,7 @@ dsc_op_db = [
             'id': 46,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -54,7 +58,7 @@ dsc_op_db = [
             'id': 56,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -168,7 +172,7 @@ dsc_op_db = [
             'id': 72,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 72,
             'param_cnt': 2
         }
@@ -193,7 +197,7 @@ dsc_op_db = [
             'id': 60,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -215,7 +219,7 @@ dsc_op_db = [
             'id': 62,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -237,7 +241,7 @@ dsc_op_db = [
             'id': 59,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -259,7 +263,7 @@ dsc_op_db = [
             'id': 50,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 35,
             'param_cnt': 1
         },
@@ -349,7 +353,7 @@ dsc_op_db = [
             'id': 66,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 66,
             'param_cnt': 2
         }
@@ -382,7 +386,7 @@ dsc_op_db = [
             'id': 48,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -401,7 +405,7 @@ dsc_op_db = [
             'id': 81,
             'param_cnt': 24
         },
-        'info_f': {
+        'info_F': {
             'id': 81,
             'param_cnt': 24
         }
@@ -434,7 +438,7 @@ dsc_op_db = [
             'id': 44,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -449,7 +453,7 @@ dsc_op_db = [
             'id': 43,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -468,7 +472,7 @@ dsc_op_db = [
             'id': 78,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 78,
             'param_cnt': 2
         }
@@ -479,7 +483,7 @@ dsc_op_db = [
             'id': 41,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -494,7 +498,7 @@ dsc_op_db = [
             'id': 40,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -513,7 +517,7 @@ dsc_op_db = [
             'id': 75,
             'param_cnt': 3
         },
-        'info_f': {
+        'info_F': {
             'id': 75,
             'param_cnt': 3
         }
@@ -528,7 +532,7 @@ dsc_op_db = [
             'id': 79,
             'param_cnt': 3
         },
-        'info_f': {
+        'info_F': {
             'id': 79,
             'param_cnt': 3
         }
@@ -539,7 +543,7 @@ dsc_op_db = [
             'id': 30,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 30,
             'param_cnt': 2
         },
@@ -554,7 +558,7 @@ dsc_op_db = [
             'id': 45,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -573,7 +577,7 @@ dsc_op_db = [
             'id': 76,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 76,
             'param_cnt': 2
         }
@@ -584,7 +588,7 @@ dsc_op_db = [
             'id': 42,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -599,7 +603,7 @@ dsc_op_db = [
             'id': 34,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -618,7 +622,7 @@ dsc_op_db = [
             'id': 82,
             'param_cnt': 1
         },
-        'info_f': {
+        'info_F': {
             'id': 82,
             'param_cnt': 1
         }
@@ -629,7 +633,7 @@ dsc_op_db = [
             'id': 27,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 27,
             'param_cnt': 2
         },
@@ -655,7 +659,7 @@ dsc_op_db = [
             'id': 77,
             'param_cnt': 4
         },
-        'info_f': {
+        'info_F': {
             'id': 77,
             'param_cnt': 4
         }
@@ -674,7 +678,7 @@ dsc_op_db = [
             'id': 64,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 64,
             'param_cnt': 2
         }
@@ -685,7 +689,7 @@ dsc_op_db = [
             'id': 36,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -704,7 +708,7 @@ dsc_op_db = [
             'id': 80,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 80,
             'param_cnt': 2
         }
@@ -715,7 +719,7 @@ dsc_op_db = [
             'id': 38,
             'param_cnt': 7
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -734,7 +738,7 @@ dsc_op_db = [
             'id': 74,
             'param_cnt': 9
         },
-        'info_f': {
+        'info_F': {
             'id': 74,
             'param_cnt': 9
         }
@@ -745,7 +749,7 @@ dsc_op_db = [
             'id': 39,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -771,7 +775,7 @@ dsc_op_db = [
             'id': 35,
             'param_cnt': 5
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -786,7 +790,7 @@ dsc_op_db = [
             'id': 9,
             'param_cnt': 6
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 9,
             'param_cnt': 5
         },
@@ -851,7 +855,7 @@ dsc_op_db = [
             'id': 22,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 22,
             'param_cnt': 3
         },
@@ -866,7 +870,7 @@ dsc_op_db = [
             'id': 18,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 18,
             'param_cnt': 2
         },
@@ -909,7 +913,7 @@ dsc_op_db = [
             'id': 55,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 39,
             'param_cnt': 1
         },
@@ -953,7 +957,7 @@ dsc_op_db = [
             'id': 20,
             'param_cnt': 5
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 20,
             'param_cnt': 4
         },
@@ -968,7 +972,7 @@ dsc_op_db = [
             'id': 47,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1019,7 +1023,7 @@ dsc_op_db = [
             'id': 61,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1062,7 +1066,7 @@ dsc_op_db = [
             'id': 51,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1077,7 +1081,7 @@ dsc_op_db = [
             'id': 21,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 21,
             'param_cnt': 3
         },
@@ -1092,7 +1096,7 @@ dsc_op_db = [
             'id': 23,
             'param_cnt': 5
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 23,
             'param_cnt': 4
         },
@@ -1114,7 +1118,7 @@ dsc_op_db = [
             'id': 24,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 24,
             'param_cnt': 1
         },
@@ -1178,13 +1182,21 @@ dsc_op_db = [
     },
     {
         'name': 'MIKU_DISP',
+        'desc': 'Show or hide a character.',
         'info_default': {
             'id': 4,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+            ]
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 4,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+            ]
         },
         'info_PSP1': {
             'id': 4,
@@ -1193,13 +1205,25 @@ dsc_op_db = [
     },
     {
         'name': 'MIKU_MOVE',
+        'desc': 'Move a character.',
         'info_default': {
             'id': 2,
-            'param_cnt': 4
+            'param_cnt': 4,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'x', 'desc': 'x position', 'type': int},
+                {'name': 'y', 'desc': 'y position', 'type': int},
+                {'name': 'z', 'desc': 'z position', 'type': int}
+            ]
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 2,
-            'param_cnt': 3
+            'param_cnt': 3,
+            'param_info': [
+                {'name': 'x', 'desc': 'x position', 'type': int},
+                {'name': 'y', 'desc': 'y position', 'type': int},
+                {'name': 'z', 'desc': 'z position', 'type': int}
+            ]
         },
         'info_PSP1': {
             'id': 2,
@@ -1208,13 +1232,21 @@ dsc_op_db = [
     },
     {
         'name': 'MIKU_ROT',
+        'desc': 'Rotate a character.',
         'info_default': {
             'id': 3,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'angle', 'desc': 'angle', 'type': int}
+            ]
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 3,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'angle', 'desc': 'angle', 'type': int}
+            ]
         },
         'info_PSP1': {
             'id': 3,
@@ -1223,13 +1255,21 @@ dsc_op_db = [
     },
     {
         'name': 'MIKU_SHADOW',
+        'desc': 'Show or hide a character\'s shadow(?).',
         'info_default': {
             'id': 5,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'shadow visible?', 'desc': 'shadow visible or not? (does nothing in AFT)', 'type': bool}
+            ]
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 5,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'shadow visible?', 'desc': 'shadow visible or not? (does nothing in AFT)', 'type': bool}
+            ]
         },
         'info_PSP1': {
             'id': 5,
@@ -1242,7 +1282,7 @@ dsc_op_db = [
             'id': 26,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 26,
             'param_cnt': 1
         },
@@ -1257,7 +1297,7 @@ dsc_op_db = [
             'id': 19,
             'param_cnt': 5
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 19,
             'param_cnt': 3
         },
@@ -1272,7 +1312,7 @@ dsc_op_db = [
             'id': 31,
             'param_cnt': 21
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 31,
             'param_cnt': 19
         },
@@ -1324,7 +1364,7 @@ dsc_op_db = [
             'id': 68,
             'param_cnt': 1
         },
-        'info_f': {
+        'info_F': {
             'id': 68,
             'param_cnt': 1
         }
@@ -1343,7 +1383,7 @@ dsc_op_db = [
             'id': 67,
             'param_cnt': 1
         },
-        'info_f': {
+        'info_F': {
             'id': 67,
             'param_cnt': 1
         }
@@ -1361,7 +1401,7 @@ dsc_op_db = [
             'id': 49,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 34,
             'param_cnt': 2
         },
@@ -1384,7 +1424,7 @@ dsc_op_db = [
             'id': 71,
             'param_cnt': 3
         },
-        'info_f': {
+        'info_F': {
             'id': 71,
             'param_cnt': 3
         }
@@ -1403,7 +1443,7 @@ dsc_op_db = [
             'id': 70,
             'param_cnt': 3
         },
-        'info_f': {
+        'info_F': {
             'id': 70,
             'param_cnt': 3
         }
@@ -1414,7 +1454,7 @@ dsc_op_db = [
             'id': 57,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1455,7 +1495,7 @@ dsc_op_db = [
             'id': 65,
             'param_cnt': 1
         },
-        'info_f': {
+        'info_F': {
             'id': 65,
             'param_cnt': 1
         }
@@ -1493,7 +1533,7 @@ dsc_op_db = [
             'id': 83,
             'param_cnt': 2
         },
-        'info_f': {
+        'info_F': {
             'id': 83,
             'param_cnt': 2
         }
@@ -1540,7 +1580,7 @@ dsc_op_db = [
             'id': 54,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 38,
             'param_cnt': 1
         },
@@ -1555,7 +1595,7 @@ dsc_op_db = [
             'id': 52,
             'param_cnt': 6
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 36,
             'param_cnt': 6
         },
@@ -1570,7 +1610,7 @@ dsc_op_db = [
             'id': 63,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1592,7 +1632,7 @@ dsc_op_db = [
             'id': 37,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1607,7 +1647,7 @@ dsc_op_db = [
             'id': 7,
             'param_cnt': 4
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 7,
             'param_cnt': 3
         },
@@ -1622,7 +1662,7 @@ dsc_op_db = [
             'id': 8,
             'param_cnt': 2
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 8,
             'param_cnt': 1
         },
@@ -1652,18 +1692,23 @@ dsc_op_db = [
             'id': 73,
             'param_cnt': 1
         },
-        'info_f': {
+        'info_F': {
             'id': 73,
             'param_cnt': 1
         }
     },
     {
         'name': 'SHADOWHEIGHT',
+        'desc': 'Set the height of a character\'s shadow(?).',
         'info_default': {
             'id': 29,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'shadow height', 'desc': 'height (length?) of the shadow? (does nothing in AFT)', 'type': int}
+            ]
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 29,
             'param_cnt': 1
         },
@@ -1678,7 +1723,7 @@ dsc_op_db = [
             'id': 33,
             'param_cnt': 3
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 33,
             'param_cnt': 2
         },
@@ -1774,6 +1819,7 @@ dsc_op_db = [
     },
     {
         'name': 'TARGET',
+        'desc': 'Rhythm game note?',
         'info_default': {
             'id': 6,
             'param_cnt': 7
@@ -1786,7 +1832,7 @@ dsc_op_db = [
             'id': 6,
             'param_cnt': 12
         },
-        'info_f': {
+        'info_F': {
             'id': 6,
             'param_cnt': 11
         }
@@ -1815,7 +1861,7 @@ dsc_op_db = [
             'id': 58,
             'param_cnt': 1
         },
-        'info_A12': {
+        'info_PDA': {
             'id': None,
             'param_cnt': None
         },
@@ -1837,7 +1883,7 @@ dsc_op_db = [
         'info_default': {
             'id': 1,
             'param_cnt': 1,
-            'params_info': [{'desc': 'time to wait until', 'type': 'int'}]
+            'param_info': [{'name': 'time', 'desc': 'time to wait until', 'type': int}]
         }
     },
     {
@@ -1853,7 +1899,7 @@ dsc_op_db = [
             'id': 53,
             'param_cnt': 6
         },
-        'info_A12': {
+        'info_PDA': {
             'id': 37,
             'param_cnt': 6
         },
@@ -2041,9 +2087,41 @@ dsc_op_db = [
             'id': 69,
             'param_cnt': 3
         },
-        'info_f': {
+        'info_F': {
             'id': 69,
             'param_cnt': 3
         }
     }
 ]
+
+"""list of supported game names"""
+dsc_db_games = ['PDA', 'F2', 'FT', 'PSP1', 'PSP2', 'X', 'F']
+
+"""
+dsc_op_db indices for opcode ids
+each entry will be a dict with keys for game names
+"""
+dsc_lookup_ids = {}
+
+"""
+dsc_op_db indices for opcode names
+this is just a flat dictionary
+"""
+dsc_lookup_names = {}
+
+def _generate_dsc_lookups():
+    global dsc_lookup_ids
+    global dsc_lookup_names
+
+    for i, op in enumerate(dsc_op_db):
+        dsc_lookup_names[op['name']] = i
+        
+        for g in dsc_db_games:
+            info = op.get('info_{}'.format(g), op.get('info_default'))
+            if info and info['id'] != None:
+                id = info['id']
+                if not id in dsc_lookup_ids:
+                    dsc_lookup_ids[id] = {}
+                dsc_lookup_ids[id][g] = i
+
+_generate_dsc_lookups()

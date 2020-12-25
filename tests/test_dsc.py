@@ -1,6 +1,7 @@
 import unittest
 from os.path import join as joinpath, dirname
 import json
+from pydiva import pydsc
 from pydiva.pydsc_op_db import dsc_op_db
 
 module_dir = dirname(__file__)
@@ -8,7 +9,7 @@ module_dir = dirname(__file__)
 with open(joinpath(module_dir, 'data', 'dsc_db.json'), 'r', encoding='utf-8') as f:
     opse_db = json.load(f)
 
-game_info_keys = ['info_A12', 'info_F2', 'info_FT', 'info_PSP1', 'info_PSP2', 'info_X', 'info_f']
+game_info_keys = [('info_PDA', 'info_A12'), ('info_F2', 'info_F2'), ('info_FT', 'info_FT'), ('info_PSP1', 'info_PSP1'), ('info_PSP2', 'info_PSP2'), ('info_X', 'info_X'), ('info_F', 'info_f')]
 
 class CheckDb(unittest.TestCase):
     
@@ -20,8 +21,8 @@ class CheckDb(unittest.TestCase):
             self.assertTrue(opse_op is not None)
             
             for key in game_info_keys:
-                data = op.get(key, op.get('info_default'))
-                opse_data = opse_op.get(key)
+                data = op.get(key[0], op.get('info_default'))
+                opse_data = opse_op.get(key[1])
                 
                 if data is None or data['id'] is None:
                     self.assertEqual(opse_data, None)
@@ -39,7 +40,23 @@ class CheckDb(unittest.TestCase):
     def test_check_none_id_matches_params_cnt(self):
         for op in dsc_op_db:
             for key in game_info_keys:
-                data = op.get(key, op.get('info_default'))
+                data = op.get(key[0], op.get('info_default'))
                 
                 if data is not None and data['id'] is None:
                     self.assertEqual(data['param_cnt'], None)
+    
+    def test_check_none_param_cnt_matches_id(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and data['param_cnt'] is None:
+                    self.assertEqual(data['id'], None)
+    
+    def test_check_param_info_len(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and 'param_info' in data:
+                    self.assertEqual(data['param_cnt'], len(data['param_info']))
