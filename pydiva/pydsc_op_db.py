@@ -983,9 +983,15 @@ dsc_op_db = [
     },
     {
         'name': 'HAND_SCALE',
+        'desc': 'Change the size of a character\'s hands.',
         'info_FT': {
             'id': 87,
-            'param_cnt': 3
+            'param_cnt': 3,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'hand', 'desc': 'which hand to change', 'type': 'enum', 'enum_choices': ['left', 'right']},
+                {'name': 'scale', 'desc': 'scale size', 'type': int}
+            ]
         }
     },
     {
@@ -1261,14 +1267,14 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'shadow visible?', 'desc': 'shadow visible or not? (does nothing in AFT)', 'type': bool}
+                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'type': bool}
             ]
         },
         'info_PDA': {
             'id': 5,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'shadow visible?', 'desc': 'shadow visible or not? (does nothing in AFT)', 'type': bool}
+                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'type': bool}
             ]
         },
         'info_PSP1': {
@@ -1371,25 +1377,27 @@ dsc_op_db = [
     },
     {
         'name': 'MOVIE_PLAY',
-        'info_F2': {
+        'desc': 'Start movie playback.',
+        'info_default': {
             'id': 67,
             'param_cnt': 1
         },
-        'info_FT': {
-            'id': 67,
-            'param_cnt': 1
+        'info_PDA': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 67,
-            'param_cnt': 1
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 67,
-            'param_cnt': 1
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
         'name': 'MUSIC_PLAY',
+        'desc': 'Start music playback.',
         'info_default': {
             'id': 25,
             'param_cnt': 0
@@ -1643,6 +1651,7 @@ dsc_op_db = [
     },
     {
         'name': 'SET_MOTION',
+        'desc': 'Set a character\'s motion.',
         'info_default': {
             'id': 7,
             'param_cnt': 4
@@ -1705,12 +1714,15 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'shadow height', 'desc': 'height (length?) of the shadow? (does nothing in AFT)', 'type': int}
+                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'type': int}
             ]
         },
         'info_PDA': {
             'id': 29,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'type': int}
+            ]
         },
         'info_PSP1': {
             'id': 29,
