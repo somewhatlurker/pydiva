@@ -2,6 +2,7 @@ import unittest
 from os.path import join as joinpath, dirname
 import json
 from io import BytesIO
+from itertools import combinations
 from pydiva import pydsc
 from pydiva.pydsc_op_db import dsc_op_db, dsc_lookup_ids, dsc_lookup_names
 
@@ -62,6 +63,17 @@ class CheckDb(unittest.TestCase):
                 
                 if data is not None and 'param_info' in data:
                     self.assertEqual(data['param_cnt'], len(data['param_info']))
+    
+    def test_check_param_info_names_unique(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and 'param_info' in data:
+                    for c in combinations(data['param_info'], 2):
+                        if c[0] == None or c[1] == None:
+                            continue
+                        self.assertNotEqual(c[0]['name'], c[1]['name'])
 
 
 class TestDscOpInit(unittest.TestCase):
@@ -226,15 +238,29 @@ class TestDscString(unittest.TestCase):
     
     def test_ft_string(self):
         strings = [
-            'TIME(time=0);',
+            'TIME(0);',
             'MUSIC_PLAY();',
             'CHANGE_FIELD(1);',
             'MIKU_DISP(chara=0, visible=False);',
             'MIKU_MOVE(chara=0, x=1, y=2, z=3);',
             'HAND_SCALE(chara=0, hand=left, scale=1220);',
+            'MIKU_DISP(chara=0, visible=True);',
+            'TARGET(type=tri_hold, pos_x=69, pos_y=420, angle=39, dist=1, amp=2, freq=3);',
+            'END();'
+        ]
+        strings_compat = [
+            'TIME(0);',
+            'MUSIC_PLAY();',
+            'CHANGE_FIELD(1);',
+            'MIKU_DISP(0, 0);',
+            'MIKU_MOVE(0, 1, 2, 3);',
+            'HAND_SCALE(0, 0, 1220);',
+            'MIKU_DISP(0, 1);',
+            'TARGET(4, 69, 420, 39, 1, 2, 3);',
             'END();'
         ]
         
         dsc = [pydsc.DscOp.from_string('FT', s) for s in strings]
         
         self.assertEqual(pydsc.dsc_to_string(dsc), '\n'.join(strings))
+        self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True), '\n'.join(strings_compat))
