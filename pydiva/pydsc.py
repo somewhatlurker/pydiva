@@ -11,7 +11,7 @@ class UnsupportedDscGameException(Exception):
 class UnknownDscOpException(Exception):
     pass
 
-def _fix_param_types(param_values, param_info, enum_to_str=True):
+def _fix_param_types(param_values, param_info):
     """
     Corrects parameter types and resolves enums to strings for easier handling
     """
@@ -27,9 +27,10 @@ def _fix_param_types(param_values, param_info, enum_to_str=True):
         else:
             t = int
         
-        param_values[i] = t(param_values[i])
-        if enum_to_str and issubclass(type(param_values[i]), StringEnum):
-            param_values[i] = param_values[i].choices[param_values[i].value_int]
+        if t == bool and type(param_values[i]) == str:
+            param_values[i] = param_values[i].lower() in ['t', 'true']
+        else:
+            param_values[i] = t(param_values[i])
     
     return param_values
 
@@ -97,6 +98,9 @@ class DscOp:
     # param_info = None
     
     def __eq__(x, y):
+        if type(y) != DscOp:
+            return NotImplemented
+        
         if not x.game == y.game:
             return False
         if not x.op_name == y.op_name:
@@ -250,7 +254,7 @@ class DscOp:
     
     def write_to_stream(self, s, endian='little'):
         if self.param_info:
-            pvalues = _fix_param_types(self.param_values, self.param_info, enum_to_str=False)
+            pvalues = _fix_param_types(self.param_values, self.param_info)
         else:
             pvalues = self.param_values
         

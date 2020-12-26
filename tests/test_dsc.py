@@ -11,6 +11,7 @@ with open(joinpath(module_dir, 'data', 'dsc_db.json'), 'r', encoding='utf-8') as
     opse_db = json.load(f)
 
 game_info_keys = [('info_PDA12', 'info_A12'), ('info_F2', 'info_F2'), ('info_FT', 'info_FT'), ('info_PSP1', 'info_PSP1'), ('info_PSP2', 'info_PSP2'), ('info_X', 'info_X'), ('info_F', 'info_f')]
+hand_scale_enum = dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'][1]['type']
 
 class CheckDb(unittest.TestCase):
     
@@ -86,7 +87,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 87)
         self.assertEqual(op.op_name, 'HAND_SCALE')
-        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_values, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
     
     def test_op_from_name(self):
@@ -110,7 +111,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 87)
         self.assertEqual(op.op_name, 'HAND_SCALE')
-        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_values, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
     
     def test_op_from_string(self):
@@ -158,24 +159,54 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 87)
         self.assertEqual(op.op_name, 'HAND_SCALE')
-        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_values, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
     
     def test_params_enum_from_int(self):
         op = pydsc.DscOp.from_id('FT', 87, [0, 1, 1000])
-        self.assertEqual(op.game, 'FT')
-        self.assertEqual(op.op_id, 87)
-        self.assertEqual(op.op_name, 'HAND_SCALE')
-        self.assertEqual(op.param_values, [0, 'right', 1000])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
+        self.assertEqual(op.param_values[1], hand_scale_enum('right'))
+    
+    def test_params_enum_from_instance(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, hand_scale_enum('right'), 1000])
+        self.assertEqual(op.param_values[1], hand_scale_enum('right'))
+    
+    def test_params_enum_compare_instance(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, hand_scale_enum('right'), 1000])
+        self.assertEqual(op.param_values[1], hand_scale_enum('right'))
+    
+    def test_params_enum_compare_string(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, hand_scale_enum('right'), 1000])
+        self.assertEqual(op.param_values[1], 'right')
+    
+    def test_params_enum_compare_int(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, hand_scale_enum('right'), 1000])
+        self.assertEqual(op.param_values[1], 1)
+    
+    def test_params_bool(self):
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, True])
+        self.assertTrue(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 1])
+        self.assertTrue(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 't'])
+        self.assertTrue(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 'TRUE'])
+        self.assertTrue(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, False])
+        self.assertFalse(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 0])
+        self.assertFalse(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 'f'])
+        self.assertFalse(op.param_values[1])
+        op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, 'false'])
+        self.assertFalse(op.param_values[1])
 
 
 class TestDscStream(unittest.TestCase):
     
-    def test_aft_stream(self):
+    def test_ft_stream(self):
         dsc = [
             pydsc.DscOp.from_string('FT', 'TIME(0)'),
-            pydsc.DscOp.from_string('FT', 'MUSIC_PLAY(0)'),
+            pydsc.DscOp.from_string('FT', 'MUSIC_PLAY()'),
             pydsc.DscOp.from_string('FT', 'CHANGE_FIELD(1)'),
             pydsc.DscOp.from_string('FT', 'MIKU_DISP(chara=0, visible=False)'),
             pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, x=1, y=2, z=3)'),
@@ -189,3 +220,21 @@ class TestDscStream(unittest.TestCase):
             dsc_out = pydsc.from_stream(s)
         
         self.assertEqual(dsc, dsc_out)
+
+
+class TestDscString(unittest.TestCase):
+    
+    def test_ft_string(self):
+        strings = [
+            'TIME(time=0);',
+            'MUSIC_PLAY();',
+            'CHANGE_FIELD(1);',
+            'MIKU_DISP(chara=0, visible=False);',
+            'MIKU_MOVE(chara=0, x=1, y=2, z=3);',
+            'HAND_SCALE(chara=0, hand=left, scale=1220);',
+            'END();'
+        ]
+        
+        dsc = [pydsc.DscOp.from_string('FT', s) for s in strings]
+        
+        self.assertEqual(pydsc.dsc_to_string(dsc), '\n'.join(strings))

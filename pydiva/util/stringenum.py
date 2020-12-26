@@ -1,17 +1,22 @@
 class StringEnum:
     """
     Basically a helper for treating enums in streams like strings in code.
-    Implements the standard to_bytes/from_bytes stuff from other types, but
-    from_bytes will return a string that can be used to reinitialise the class
-    instead of a StringEnum object.
+    Implements the standard to_bytes/from_bytes stuff from other types.
     
-    Don't directly use this class, but instead use
-    `type('my_enum', (StringEnum,), {'choices': ['choice_1', 'choice_2', ...]})`.
+    Use set_value to change value after initialisation, or just initialise a
+    new instance using the new value.
     
-    Use `issubclass(my_enum, StringEnum)` to check type.
+    Don't directly use this class, but instead derive it:
+    `type('my_enum', (StringEnum,), {'_choices': ['choice_1', 'choice_2']})`.
+    
+    Use `issubclass(my_enum, StringEnum)` to check if a class is a StringEnum.
     """
     
-    choices = None
+    _choices = None
+    @property
+    @classmethod
+    def choices(cls):
+        return cls._choices
     
     # instance vars
     # value_int = None
@@ -27,7 +32,10 @@ class StringEnum:
         
         """
         
-        self.__class__._check_choices_valid()
+        self.__class__._check_choices_valid()        
+        self.set_value(value)
+    
+    def set_value(self, value):
         if type(value) == type(self):
             value = value.value_int
         
@@ -37,34 +45,36 @@ class StringEnum:
             else:
                 raise KeyError('Invalid enum value {}'.format(value))
         elif type(value) == str:
-            self.set_value_str(value)
+            try:
+                self.value_int = self.__class__.choices.index(value)
+            except ValueError:
+                raise KeyError('Invalid enum value {}'.format(value))
         else:
             raise TypeError('value is wrong type (must be {} instance, str, or int)'.format(self.__class__.__name__))
-    
-    def set_value_str(self, v_str):
-        if not v_str:
-            self.value_int = 0
-        else:
-            v_str = str(v_str)
-            try:
-                self.value_int = self.__class__.choices.index(v_str)
-            except ValueError:
-                raise KeyError('Invalid enum value {}'.format(v_str))
     
     def to_bytes(self, length, byteorder, signed=False):
         return self.value_int.to_bytes(length=length, byteorder=byteorder, signed=signed)
     
     @classmethod
     def from_bytes(cls, bytes, byteorder, signed=False):
-        """
-        This actually returns a string that can be used to reinitilise the type.
-        Check the class docstring for details on how this works
-        """
-        
-        cls._check_choices_valid()
         value_int = int.from_bytes(bytes, byteorder=byteorder, signed=signed)
-        
-        if value_int >= len(cls.choices):
-            raise KeyError('Invalid enum value {}'.format(value_int))
-        
-        return cls.choices[value_int]
+        return cls(value_int)
+    
+    def __repr__(self):
+        return '{}({})'.format(self.__class__.__name__, self.__class__.choices[self.value_int])
+    
+    def __str__(self):
+        return self.__class__.choices[self.value_int]
+    
+    def __eq__(x, y):
+        cls = type(x)
+        if type(y) == cls:
+            return x.value_int == y.value_int
+        else:
+            try:
+                y_cls = cls(y)
+            except KeyError:
+                return False
+            except Exception:
+                return NotImplemented
+            return x.value_int == y_cls.value_int

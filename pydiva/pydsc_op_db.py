@@ -7,8 +7,7 @@ param_info is a list with len == param_cnt, where each element is a dict or None
 param_info dicts have name, desc, and type
 
 if a param_info type is derived from pydiva.util.stringenum.StringEnum
-(`issubclass(type, StringEnum)`), use type.choices to get a list of valid
-strings.
+(`issubclass(type, StringEnum)`), use .choices to get a list of valid strings.
 
 list of game-specific info dicts:
   info_PDA12, info_F2, info_FT, info_PSP1, info_PSP2, info_X, info_F
