@@ -1,5 +1,6 @@
 import unittest
-from os.path import join as joinpath, dirname
+from os import listdir
+from os.path import join as joinpath, dirname, exists as pathexists
 import json
 from io import BytesIO
 from itertools import combinations
@@ -64,6 +65,21 @@ class CheckDb(unittest.TestCase):
                 if data is not None and 'param_info' in data:
                     self.assertEqual(data['param_cnt'], len(data['param_info']))
     
+    def test_check_param_info_required_and_default(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and 'param_info' in data:
+                    for p in data['param_info']:
+                        if not p:
+                            continue
+                        self.assertTrue('required' in p)
+                        if not p['required']:
+                            self.assertTrue('default' in p)
+                        if 'default' in p:
+                            self.assertFalse(p['required'])
+    
     def test_check_param_info_names_unique(self):
         for op in dsc_op_db:
             for key in game_info_keys:
@@ -87,12 +103,12 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
     
     def test_op_from_id_auto_params(self):
-        op = pydsc.DscOp.from_id('FT', 1)
+        op = pydsc.DscOp.from_id('FT', 24, [1])
         self.assertEqual(op.game, 'FT')
-        self.assertEqual(op.op_id, 1)
-        self.assertEqual(op.op_name, 'TIME')
-        self.assertEqual(op.param_values, [0])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
+        self.assertEqual(op.op_id, 24)
+        self.assertEqual(op.op_name, 'LYRIC')
+        self.assertEqual(op.param_values, [1, -1])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['LYRIC']]['info_default']['param_info'])
     
     def test_op_from_id_params_enum(self):
         op = pydsc.DscOp.from_id('FT', 87, [0, 'right', 1000])
@@ -111,12 +127,12 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
     
     def test_op_from_name_auto_params(self):
-        op = pydsc.DscOp.from_name('X', 'TIME')
+        op = pydsc.DscOp.from_name('X', 'LYRIC', [1])
         self.assertEqual(op.game, 'X')
-        self.assertEqual(op.op_id, 1)
-        self.assertEqual(op.op_name, 'TIME')
-        self.assertEqual(op.param_values, [0])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
+        self.assertEqual(op.op_id, 24)
+        self.assertEqual(op.op_name, 'LYRIC')
+        self.assertEqual(op.param_values, [1, -1])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['LYRIC']]['info_default']['param_info'])
     
     def test_op_from_name_params_enum(self):
         op = pydsc.DscOp.from_name('FT', 'HAND_SCALE', [0, 'right', 1000])
@@ -135,12 +151,13 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
     
     def test_op_from_string_sparse(self):
-        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=1, z=3)')
+        op = pydsc.DscOp.from_string('FT', 'TARGET(type=cross, pos_x=1, pos_y=2, 3, amp=5)')
         self.assertEqual(op.game, 'FT')
-        self.assertEqual(op.op_id, 2)
-        self.assertEqual(op.op_name, 'MIKU_MOVE')
-        self.assertEqual(op.param_values, [1, 0, 0, 3])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+        self.assertEqual(op.op_id, 6)
+        self.assertEqual(op.op_name, 'TARGET')
+        pinfo = dsc_op_db[dsc_lookup_names['TARGET']]['info_FT']['param_info']
+        self.assertEqual(op.param_values, ['cross', 1, 2, 3, pinfo[4]['default'], 5, pinfo[6]['default']])
+        self.assertEqual(op.param_info, pinfo)
     
     def test_op_from_string_positional(self):
         op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(0, 1,2, 3)')
@@ -151,20 +168,20 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
     
     def test_op_from_string_auto_params(self):
-        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE( )')
+        op = pydsc.DscOp.from_string('FT', 'LYRIC(1)')
         self.assertEqual(op.game, 'FT')
-        self.assertEqual(op.op_id, 2)
-        self.assertEqual(op.op_name, 'MIKU_MOVE')
-        self.assertEqual(op.param_values, [0, 0, 0, 0])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+        self.assertEqual(op.op_id, 24)
+        self.assertEqual(op.op_name, 'LYRIC')
+        self.assertEqual(op.param_values, [1, -1])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['LYRIC']]['info_default']['param_info'])
     
-    def test_op_from_string_auto_params_semicolon(self):
-        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE( );')
+    def test_op_from_string_auto_params(self):
+        op = pydsc.DscOp.from_string('FT', 'LYRIC(id=1);')
         self.assertEqual(op.game, 'FT')
-        self.assertEqual(op.op_id, 2)
-        self.assertEqual(op.op_name, 'MIKU_MOVE')
-        self.assertEqual(op.param_values, [0, 0, 0, 0])
-        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+        self.assertEqual(op.op_id, 24)
+        self.assertEqual(op.op_name, 'LYRIC')
+        self.assertEqual(op.param_values, [1, -1])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['LYRIC']]['info_default']['param_info'])
     
     def test_op_from_string_params_enum(self):
         op = pydsc.DscOp.from_string('FT', 'HAND_SCALE(0, hand=right, 1000)')
@@ -248,11 +265,11 @@ class TestDscString(unittest.TestCase):
             '  TARGET(type=tri_hold, pos_x=69, pos_y=420, angle=39, dist=1, amp=2, freq=3);',
             'PV_BRANCH_MODE(normal);',
             '    CHANGE_FIELD(2);',
-            '  TIME(1);',
+            'TIME(1);',
             '    CHANGE_FIELD(3);',
             'PV_BRANCH_MODE(success);',
             '    CHANGE_FIELD(2);',
-            '  TIME(1);',
+            'TIME(1);',
             '    CHANGE_FIELD(1);',
             'PV_BRANCH_MODE(none);',
             '  CHANGE_FIELD(4);',
@@ -289,3 +306,24 @@ class TestDscString(unittest.TestCase):
         self.maxDiff = None
         self.assertEqual(pydsc.dsc_to_string(dsc, indent=2), '\n'.join(strings))
         self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True, indent=0), '\n'.join(strings_compat))
+
+class cprt_tests(unittest.TestCase):
+    
+    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+        def test_dsc_real(self):
+            for dscfile in listdir(joinpath(module_dir, '..', 'copyright!', 'script')):
+                if not dscfile.endswith('.dsc'):
+                    continue
+                print (dscfile)
+                
+                with open(joinpath(module_dir, '..', 'copyright!', 'script', dscfile), 'rb') as f:
+                    dsc = pydsc.from_stream(f)
+                    f.seek(12)
+                    dsc_bytes_in = f.read()
+                
+                with BytesIO() as s:
+                    pydsc.to_stream(dsc, s)
+                    s.seek(12)
+                    dsc_bytes_out = s.read()
+                
+                self.assertEqual(dsc_bytes_in, dsc_bytes_out)

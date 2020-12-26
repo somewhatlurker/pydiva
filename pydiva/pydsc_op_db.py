@@ -141,7 +141,7 @@ dsc_op_db = [
             'id': 14,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'id', 'desc': 'field number', 'type': int}
+                {'name': 'id', 'desc': 'field number', 'required': True, 'type': int}
             ]
         },
         'info_F2': {
@@ -252,8 +252,8 @@ dsc_op_db = [
             'id': 59,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'size', 'desc': 'chara size', 'type': type('chara_size_enum', (StringEnum,), {'choices': ['normal', 'unk2', 'unk3']})}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'size', 'desc': 'chara size -- values 0~3 are special', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
@@ -354,8 +354,8 @@ dsc_op_db = [
             'id': 13,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk1', 'unk2', 'unk3']})},
-                {'name': 'id', 'desc': 'camera number?', 'type': int}
+                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         }
     },
@@ -366,8 +366,8 @@ dsc_op_db = [
             'id': 66,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk1', 'unk2', 'unk3']})},
-                {'name': 'id', 'desc': 'camera number?', 'type': int}
+                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
@@ -629,8 +629,8 @@ dsc_op_db = [
             'id': 34,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'id', 'desc': 'lyric line number', 'type': int},
-                {'name': 'end_time', 'desc': 'time to hide lyric at', 'type': int}
+                {'name': 'id', 'desc': 'lyric line number', 'required': True, 'type': int},
+                {'name': 'end_time', 'desc': 'time to hide lyric at', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
@@ -1018,9 +1018,9 @@ dsc_op_db = [
             'id': 87,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'hand', 'desc': 'which hand to change', 'type': type('hand_scale_enum', (StringEnum,), {'choices': ['left', 'right']})},
-                {'name': 'scale', 'desc': 'scale size', 'type': int}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'hand', 'desc': 'which hand to change', 'required': True, 'type': type('hand_scale_enum', (StringEnum,), {'choices': ['left', 'right']})},
+                {'name': 'scale', 'desc': 'scale size', 'required': True, 'type': int}
             ]
         }
     },
@@ -1155,22 +1155,22 @@ dsc_op_db = [
             'id': 24,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'id', 'desc': 'lyric line number', 'type': int},
-                {'name': 'color', 'desc': 'color of lyrics', 'type': int}
+                {'name': 'id', 'desc': 'lyric line number', 'required': True, 'type': int},
+                {'name': 'color', 'desc': 'color of lyrics', 'required': False, 'default': -1, 'type': int}
             ]
         },
         'info_PDA12': {
             'id': 24,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'id', 'desc': 'lyric line number', 'type': int}
+                {'name': 'id', 'desc': 'lyric line number', 'required': True, 'type': int}
             ]
         },
         'info_PSP1': {
             'id': 24,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'id', 'desc': 'lyric line number', 'type': int}
+                {'name': 'id', 'desc': 'lyric line number', 'required': True, 'type': int}
             ]
         }
     },
@@ -1234,22 +1234,22 @@ dsc_op_db = [
             'id': 4,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'visible', 'desc': 'visible or not', 'required': True, 'type': bool}
             ]
         },
         'info_PDA12': {
             'id': 4,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+                {'name': 'visible', 'desc': 'visible or not', 'required': True, 'type': bool}
             ]
         },
         'info_PSP1': {
             'id': 4,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+                {'name': 'visible', 'desc': 'visible or not', 'required': True, 'type': bool}
             ]
         }
     },
@@ -1260,28 +1260,28 @@ dsc_op_db = [
             'id': 2,
             'param_cnt': 4,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'x', 'desc': 'x position', 'type': int},
-                {'name': 'y', 'desc': 'y position', 'type': int},
-                {'name': 'z', 'desc': 'z position', 'type': int}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
             'id': 2,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'x', 'desc': 'x position', 'type': int},
-                {'name': 'y', 'desc': 'y position', 'type': int},
-                {'name': 'z', 'desc': 'z position', 'type': int}
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
             ]
         },
         'info_PSP1': {
             'id': 2,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'x', 'desc': 'x position', 'type': int},
-                {'name': 'y', 'desc': 'y position', 'type': int},
-                {'name': 'z', 'desc': 'z position', 'type': int}
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
             ]
         }
     },
@@ -1292,22 +1292,22 @@ dsc_op_db = [
             'id': 3,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'angle', 'desc': 'angle', 'type': int}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
             'id': 3,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'angle', 'desc': 'angle', 'type': int}
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
             ]
         },
         'info_PSP1': {
             'id': 3,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'angle', 'desc': 'angle', 'type': int}
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
             ]
         }
     },
@@ -1318,22 +1318,22 @@ dsc_op_db = [
             'id': 5,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'type': bool}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'required': True, 'type': bool}
             ]
         },
         'info_PDA12': {
             'id': 5,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'type': bool}
+                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'required': True, 'type': bool}
             ]
         },
         'info_PSP1': {
             'id': 5,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'type': bool}
+                {'name': 'visible', 'desc': 'shadow visible or not(?) (does nothing in AFT)', 'required': True, 'type': bool}
             ]
         }
     },
@@ -1359,29 +1359,29 @@ dsc_op_db = [
             'id': 19,
             'param_cnt': 5,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
                 None, # not even read in aft
-                {'name': 'id', 'desc': 'mouth animation number', 'type': int},
-                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'type': int}
+                {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
+                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
             ]
         },
         'info_PDA12': {
             'id': 19,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'id', 'desc': 'mouth animation number', 'type': int},
-                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'type': int}
+                {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
+                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
             ]
         },
         'info_PSP1': {
             'id': 19,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'id', 'desc': 'mouth animation number', 'type': int},
-                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'type': int}
+                {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
+                {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
             ]
         }
     },
@@ -1431,11 +1431,12 @@ dsc_op_db = [
     },
     {
         'name': 'MOVIE_DISP',
+        'desc': 'Show a movie.',
         'info_default': {
             'id': 68,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+                {'name': 'id', 'desc': 'movie id (ignored by AFT)', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
@@ -1458,7 +1459,7 @@ dsc_op_db = [
             'id': 67,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'play', 'desc': 'play or not (must be true for AFT to do anything)', 'type': bool}
+                {'name': 'play', 'desc': 'play or not (must be true for AFT to do anything)', 'required': True, 'type': bool}
             ]
         },
         'info_PDA12': {
@@ -1575,7 +1576,7 @@ dsc_op_db = [
             'id': 65,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'branch', 'desc': 'which branch to set', 'type': type('pv_branch_enum', (StringEnum,), {'choices': ['none', 'normal', 'success']})}
+                {'name': 'branch', 'desc': 'which branch to set', 'required': True, 'type': type('pv_branch_enum', (StringEnum,), {'choices': ['none', 'normal', 'success']})}
             ]
         },
         'info_PDA12': {
@@ -1796,22 +1797,22 @@ dsc_op_db = [
             'id': 29,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'type': int}
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
             'id': 29,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'type': int}
+                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'required': True, 'type': int}
             ]
         },
         'info_PSP1': {
             'id': 29,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'type': int}
+                {'name': 'height', 'desc': 'height (length?) of the shadow(?) (does nothing in AFT)', 'required': True, 'type': int}
             ]
         }
     },
@@ -1922,20 +1923,20 @@ dsc_op_db = [
             'id': 6,
             'param_cnt': 7,
             'param_info': [
-                {'name': 'type', 'desc': 'note type id', 'type': int},
-                {'name': 'pos_x', 'desc': 'x position', 'type': int},
-                {'name': 'pos_y', 'desc': 'y position', 'type': int},
-                {'name': 'angle', 'desc': 'fly angle', 'type': int},
-                {'name': 'dist', 'desc': 'fly distance', 'type': int},
-                {'name': 'amp', 'desc': 'flying wave amplitude', 'type': int},
-                {'name': 'freq', 'desc': 'flying wave frequency', 'type': int},
+                {'name': 'type', 'desc': 'note type id', 'required': True, 'type': int},
+                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': int},
+                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': int},
+                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': int},
+                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': 300000, 'type': int},
+                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': 500, 'type': int},
+                {'name': 'freq', 'desc': 'flying wave frequency', 'required': False, 'default': 0, 'type': int}
             ]
         },
         'info_FT': {
             'id': 6,
             'param_cnt': 7,
             'param_info': [
-                {'name': 'type', 'desc': 'note type id', 'type': type('target_type_ft_enum', (StringEnum,), {'choices': [
+                {'name': 'type', 'desc': 'note type id', 'required': True, 'type': type('target_type_ft_enum', (StringEnum,), {'choices': [
                     'tri', 'circ', 'cross', 'square',
                     'tri_hold', 'circ_hold', 'cross_hold', 'square_hold',
                     'random', 'random_hold', 'repeat',
@@ -1945,12 +1946,12 @@ dsc_op_db = [
                     'tri_success', 'circ_success', 'cross_success', 'square_success',
                     'unim_star_success', 'slide_l_success', 'slide_r_success'
                 ]})},
-                {'name': 'pos_x', 'desc': 'x position', 'type': int},
-                {'name': 'pos_y', 'desc': 'y position', 'type': int},
-                {'name': 'angle', 'desc': 'fly angle', 'type': int},
-                {'name': 'dist', 'desc': 'fly distance', 'type': int},
-                {'name': 'amp', 'desc': 'flying wave amplitude', 'type': int},
-                {'name': 'freq', 'desc': 'flying wave frequency', 'type': int},
+                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': int},
+                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': int},
+                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': int},
+                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': 300000, 'type': int},
+                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': 500, 'type': int},
+                {'name': 'freq', 'desc': 'flying wave frequency', 'required': False, 'default': 0, 'type': int}
             ]
         },
         'info_F2': {
@@ -1990,7 +1991,7 @@ dsc_op_db = [
             'id': 58,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'time', 'desc': 'flying time', 'type': int}
+                {'name': 'time', 'desc': 'flying time', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
@@ -2015,7 +2016,7 @@ dsc_op_db = [
         'info_default': {
             'id': 1,
             'param_cnt': 1,
-            'param_info': [{'name': 'time', 'desc': 'time to wait until', 'type': int}]
+            'param_info': [{'name': 'time', 'desc': 'time to wait until', 'required': True, 'type': int}]
         }
     },
     {

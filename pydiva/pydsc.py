@@ -20,9 +20,16 @@ def _fix_param_types(param_values, param_info):
     
     for i in range(len(param_values)):
         if param_values[i] == '':
-            param_values[i] = 0
+            param_values[i] = None
         
         if param_info[i]:
+            # resolve None types to correct initial type
+            if param_values[i] == None:
+                if param_info[i]['required']:
+                    raise Exception('Missing required parameter {}'.format(param_info[i]['name']))
+                else:
+                    param_values[i] = param_info[i]['default']
+            
             t = param_info[i]['type']
         else:
             t = int
@@ -33,6 +40,18 @@ def _fix_param_types(param_values, param_info):
             param_values[i] = t(param_values[i])
     
     return param_values
+
+def _fix_param_cnt(param_values, param_cnt):
+    if param_values == None:
+        pvalues = [0 for i in range(0, param_cnt)]
+    elif len(param_values) > param_cnt:
+        raise Exception('Too many values (expected {})'.format(param_cnt))
+    else:
+        pvalues = param_values
+        while len(param_values) < param_cnt:
+            pvalues += [None]
+    
+    return pvalues
 
 def _reorder_named_args(param_list, param_info):
     """
@@ -139,20 +158,12 @@ class DscOp:
         if not op_game_info:
             raise Exception('Unexpected error accessing opcode info (op {}, game {})'.format(op_id, game))
         
-        param_cnt = op_game_info['param_cnt']
-        if param_values == None:
-            pvalues = [0 for i in range(0, param_cnt)]
-        elif len(param_values) > param_cnt:
-            pvalues = param_values[:param_cnt]
-        else:
-            pvalues = param_values
-            while len(param_values) < param_cnt:
-                pvalues += [0]
+        pvalues = _fix_param_cnt(param_values, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
             pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
+            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_info['name'], op_id, pvalues, op_game_info.get('param_info'))
     
@@ -168,20 +179,12 @@ class DscOp:
         if not op_game_info:
             raise UnknownDscOpException('Unknown opcode name for game {}: {}'.format(game, op_name))
         
-        param_cnt = op_game_info['param_cnt']
-        if param_values == None:
-            pvalues = [0 for i in range(0, param_cnt)]
-        elif len(param_values) > param_cnt:
-            pvalues = param_values[:param_cnt]
-        else:
-            pvalues = param_values
-            while len(param_values) < param_cnt:
-                pvalues += [0]
+        pvalues = _fix_param_cnt(param_values, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
             pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
+            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
@@ -215,17 +218,19 @@ class DscOp:
         else:
             pvalues = param_values
             while len(param_values) < param_cnt:
-                pvalues += ['0']
+                pvalues += ['']
         
         if 'param_info' in op_game_info:
-            param_values = _reorder_named_args(param_values, op_game_info['param_info'])
+            pvalues = _reorder_named_args(pvalues, op_game_info['param_info'])
         else:
-            param_values = _reorder_named_args(param_values, [None for i in range(0, param_cnt)])
+            pvalues = _reorder_named_args(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
+        
+        pvalues = _fix_param_cnt(pvalues, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
             pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
+            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
@@ -239,10 +244,10 @@ class DscOp:
             else:
                 t = int
             
-            if t == bool: # use to catch false assumptions about type
+            if t == bool and not self.param_info[i].get('ignore_bool_warning'): # use to catch false assumptions about type
                 v = int.from_bytes(s.read(4), byteorder=endian, signed=False)
                 if v > 1:
-                    raise TypeError('{}\'s parameter {} is not a bool!'.format(self.name, self.param_info[i]['name']))
+                    raise TypeError('{}\'s parameter {} is not a bool!'.format(self.op_name, self.param_info[i]['name']))
                 v = bool(v)
             else:
                 v = t.from_bytes(s.read(4), byteorder=endian, signed=True)
@@ -264,20 +269,26 @@ class DscOp:
             s.write(p.to_bytes(4, byteorder=endian, signed=True))
     
     
-    def get_str(self, show_names=True, int_vars=False):
+    def get_str(self, show_names=True, int_vars=False, hide_default=True):
         """Returns a nicely formatted string representing this OP"""
         
-        param_str = '('
+        param_str = ''
         for i, v in enumerate(self.param_values):
-            if show_names and len(self.param_values) > 1 and self.param_info and i < len(self.param_info) and self.param_info[i]:
-                param_str += '{}={}'.format(self.param_info[i]['name'], int(v) if int_vars else v)
+            if self.param_info and self.param_info[i]:
+                if hide_default and 'default' in self.param_info[i] and v == self.param_info[i]['default']:
+                    continue
+                if show_names and len(self.param_values) > 1:
+                    param_str += '{}={}'.format(self.param_info[i]['name'], int(v) if int_vars else v)
+                else:
+                    param_str += str(int(v) if int_vars else v)
             else:
                 param_str += str(int(v) if int_vars else v)
             
-            if i < len(self.param_values) - 1:
-                param_str += ', '
+            param_str += ', '
         
-        param_str += ')'
+        if len(param_str) > 0:
+            param_str = param_str[:-2]
+        param_str = '(' + param_str + ')'
         
         return '{}{}'.format(self.op_name, param_str)
     
@@ -322,23 +333,21 @@ def dsc_to_string(dsc, compat_mode=False, indent=2):
     time_ops = ['TIME']
     branch_ops = ['PV_BRANCH_MODE']
     branch_param_values = ['normal', 'success']
-    branch_indent_level = 0
+    indent_level = 1
     
     out = ''
     for i, op in enumerate(dsc):
         if op.op_name in branch_ops:
-            branch_indent_level = 0
-        
-        out += ''.join([' ' for i in range(0, branch_indent_level * indent)])
+            if op.param_values[0] in branch_param_values:
+                indent_level = 2
+            else:
+                indent_level = 1
         
         if not op.op_name in time_ops + branch_ops:
-            out += ''.join([' ' for i in range(0, indent)])
+            out += ''.join([' ' for i in range(0, indent_level * indent)])
         
-        out += op.get_str(not compat_mode, compat_mode) + ';'
+        out += op.get_str(not compat_mode, compat_mode, not compat_mode) + ';'
         if i < len(dsc) - 1:
             out += '\n'
-        
-        if op.op_name in branch_ops and op.param_values[0] in branch_param_values:
-            branch_indent_level = 1
     
     return out
