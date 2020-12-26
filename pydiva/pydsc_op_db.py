@@ -15,6 +15,9 @@ if no game-specific or default info is found, the game is not supported
 
 additionally, an id of None indicates an unsupported opcode
 """
+
+from pydiva.util.stringenum import StringEnum
+
 dsc_op_db = [
     {
         'name': 'AGEAGE_CTRL',
@@ -989,7 +992,7 @@ dsc_op_db = [
             'param_cnt': 3,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'type': int},
-                {'name': 'hand', 'desc': 'which hand to change', 'type': 'enum', 'enum_choices': ['left', 'right']},
+                {'name': 'hand', 'desc': 'which hand to change', 'type': type('hand_scale_enum', (StringEnum,), {'choices': ['left', 'right']})},
                 {'name': 'scale', 'desc': 'scale size', 'type': int}
             ]
         }

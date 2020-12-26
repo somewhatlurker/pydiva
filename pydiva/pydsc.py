@@ -3,6 +3,7 @@ pydsc reader and writer for Project Diva DSC files
 """
 
 from pydiva.pydsc_op_db import dsc_op_db, dsc_db_games, dsc_lookup_ids, dsc_lookup_names
+from pydiva.util.stringenum import StringEnum
 
 class UnsupportedDscGameException(Exception):
     pass
@@ -10,7 +11,7 @@ class UnsupportedDscGameException(Exception):
 class UnknownDscOpException(Exception):
     pass
 
-def _fix_param_types(param_values, param_info, enum_dir='to_str'):
+def _fix_param_types(param_values, param_info, enum_to_str=True):
     """
     Corrects parameter types and resolves enums to strings for easier handling
     """
@@ -26,23 +27,9 @@ def _fix_param_types(param_values, param_info, enum_dir='to_str'):
         else:
             t = int
         
-        if t == 'enum':
-            if enum_dir == 'to_str':
-                v = int(param_values[i])
-                if v < 0 or v >= len(param_info[i]['enum_choices']):
-                    raise KeyError('Invalid enum value {} for param {}'.format(v, param_info[i]['name']))
-                else:
-                    param_values[i] = param_info[i]['enum_choices'][v]
-            elif enum_dir == 'from_str':
-                v = str(param_values[i])
-                try:
-                    param_values[i] = int(param_info[i]['enum_choices'].index(v))
-                except ValueError:
-                    raise KeyError('Invalid enum value {} for param {}'.format(v, param_info[i]['name']))
-            elif enum_dir != 'none':
-                raise ValueError('Invalid enum_dir: {}'.format(enum_dir))
-        else:
-            param_values[i] = t(param_values[i])
+        param_values[i] = t(param_values[i])
+        if enum_to_str and issubclass(type(param_values[i]), StringEnum):
+            param_values[i] = param_values[i].choices[param_values[i].value_int]
     
     return param_values
 
@@ -102,11 +89,12 @@ class DscOp:
     long lists seems like too much of a hassle, so here we are
     """
     
-    game = 'FT'
-    op_name = 'END'
-    op_id = 0
-    param_values = [] # length of param_values will be set correctly when using from_id, from_name, or from_string
-    param_info = None
+    # instance vars
+    # game = 'FT'
+    # op_name = 'END'
+    # op_id = 0
+    # param_values = [] # length of param_values will be set correctly when using from_id, from_name, or from_string
+    # param_info = None
     
     def __eq__(x, y):
         if not x.game == y.game:
@@ -134,7 +122,7 @@ class DscOp:
         self.param_info = param_info
     
     @classmethod
-    def from_id(self, game, op_id, param_values=None):
+    def from_id(cls, game, op_id, param_values=None):
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         if not op_id in dsc_lookup_ids:
@@ -162,10 +150,10 @@ class DscOp:
         else:
             pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
         
-        return self(game, op_info['name'], op_id, pvalues, op_game_info.get('param_info'))
+        return cls(game, op_info['name'], op_id, pvalues, op_game_info.get('param_info'))
     
     @classmethod
-    def from_name(self, game, op_name, param_values=None):
+    def from_name(cls, game, op_name, param_values=None):
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         if not op_name in dsc_lookup_names:
@@ -191,10 +179,10 @@ class DscOp:
         else:
             pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
         
-        return self(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
+        return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
     @classmethod
-    def from_string(self, game, op_str):
+    def from_string(cls, game, op_str):
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         
@@ -231,21 +219,19 @@ class DscOp:
             param_values = _reorder_named_args(param_values, [None for i in range(0, param_cnt)])
         
         if 'param_info' in op_game_info:
-            pvalues = _fix_param_types(pvalues, op_game_info['param_info'], enum_dir='none')
+            pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)], enum_dir='none')
+            pvalues = _fix_param_types(pvalues, [None for i in range(0, param_cnt)])
         
-        return self(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
+        return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
     @classmethod
-    def read_from_stream(self, game, s, endian='little'):
-        self = self.from_id(game, int.from_bytes(s.read(4), byteorder=endian, signed=True))
+    def read_from_stream(cls, game, s, endian='little'):
+        self = cls.from_id(game, int.from_bytes(s.read(4), byteorder=endian, signed=True))
         
         for i in range(0, len(self.param_values)):
             if self.param_info and self.param_info[i]:
                 t = self.param_info[i]['type']
-                if t == 'enum': # read enums as ints and fix them later
-                    t = int
             else:
                 t = int
             
@@ -259,15 +245,12 @@ class DscOp:
             
             self.param_values[i] = v
         
-        if self.param_info: # use _fix_param_types to resolve enums
-            self.param_values = _fix_param_types(self.param_values, self.param_info)
-        
         return self
     
     
     def write_to_stream(self, s, endian='little'):
         if self.param_info:
-            pvalues = _fix_param_types(self.param_values, self.param_info, enum_dir='from_str')
+            pvalues = _fix_param_types(self.param_values, self.param_info, enum_to_str=False)
         else:
             pvalues = self.param_values
         

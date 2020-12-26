@@ -81,6 +81,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_values, [0])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
     
+    def test_op_from_id_params_enum(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, 'right', 1000])
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 87)
+        self.assertEqual(op.op_name, 'HAND_SCALE')
+        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
+    
     def test_op_from_name(self):
         op = pydsc.DscOp.from_name('F', 'TIME', [39])
         self.assertEqual(op.game, 'F')
@@ -96,6 +104,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.op_name, 'TIME')
         self.assertEqual(op.param_values, [0])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
+    
+    def test_op_from_name_params_enum(self):
+        op = pydsc.DscOp.from_name('FT', 'HAND_SCALE', [0, 'right', 1000])
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 87)
+        self.assertEqual(op.op_name, 'HAND_SCALE')
+        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
     
     def test_op_from_string(self):
         op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, z= 3, x =1,y=2 )')
@@ -136,6 +152,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.op_name, 'MIKU_MOVE')
         self.assertEqual(op.param_values, [0, 0, 0, 0])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+    
+    def test_op_from_string_params_enum(self):
+        op = pydsc.DscOp.from_string('FT', 'HAND_SCALE(0, hand=right, 1000)')
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 87)
+        self.assertEqual(op.op_name, 'HAND_SCALE')
+        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
 
 
 class TestDscStream(unittest.TestCase):
