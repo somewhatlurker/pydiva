@@ -21,9 +21,25 @@ class StringEnum:
         if type(cls.choices) not in (list, tuple):
             raise TypeError('StringEnum choices is wrong type (must be list or tuple)')
     
-    def __init__(self, v_str):
-        self._check_choices_valid()
-        self.set_value_str(v_str)
+    def __init__(self, value):
+        """
+        Initialise an instance
+        
+        """
+        
+        self.__class__._check_choices_valid()
+        if type(value) == type(self):
+            value = value.value_int
+        
+        if type(value) == int:
+            if value < len(self.__class__.choices):
+                self.value_int = value
+            else:
+                raise KeyError('Invalid enum value {}'.format(value))
+        elif type(value) == str:
+            self.set_value_str(value)
+        else:
+            raise TypeError('value is wrong type (must be {} instance, str, or int)'.format(self.__class__.__name__))
     
     def set_value_str(self, v_str):
         if not v_str:
@@ -31,7 +47,7 @@ class StringEnum:
         else:
             v_str = str(v_str)
             try:
-                self.value_int = self.choices.index(v_str)
+                self.value_int = self.__class__.choices.index(v_str)
             except ValueError:
                 raise KeyError('Invalid enum value {}'.format(v_str))
     

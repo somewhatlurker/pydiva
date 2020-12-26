@@ -160,6 +160,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.op_name, 'HAND_SCALE')
         self.assertEqual(op.param_values, [0, 'right', 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
+    
+    def test_params_enum_from_int(self):
+        op = pydsc.DscOp.from_id('FT', 87, [0, 1, 1000])
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 87)
+        self.assertEqual(op.op_name, 'HAND_SCALE')
+        self.assertEqual(op.param_values, [0, 'right', 1000])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
 
 
 class TestDscStream(unittest.TestCase):
