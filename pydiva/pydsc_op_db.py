@@ -136,6 +136,7 @@ dsc_op_db = [
     },
     {
         'name': 'CHANGE_FIELD',
+        'desc': 'Change the PV field.',
         'info_default': {
             'id': 14,
             'param_cnt': 1,
@@ -246,9 +247,14 @@ dsc_op_db = [
     },
     {
         'name': 'CHARA_SIZE',
+        'desc': 'Sets a character\'s size scale.',
         'info_default': {
             'id': 59,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'type': int},
+                {'name': 'size', 'desc': 'chara size', 'type': type('chara_size_enum', (StringEnum,), {'choices': ['normal', 'unk2', 'unk3']})}
+            ]
         },
         'info_PDA12': {
             'id': None,
@@ -343,6 +349,7 @@ dsc_op_db = [
     },
     {
         'name': 'DATA_CAMERA',
+        'desc': 'Set camera data.',
         'info_default': {
             'id': 13,
             'param_cnt': 2,
@@ -354,21 +361,26 @@ dsc_op_db = [
     },
     {
         'name': 'DATA_CAMERA_START',
-        'info_F2': {
+        'desc': '(Re)starts camera data(?).',
+        'info_default': {
             'id': 66,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'mode', 'desc': 'camera mode?', 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk1', 'unk2', 'unk3']})},
+                {'name': 'id', 'desc': 'camera number?', 'type': int}
+            ]
         },
-        'info_FT': {
-            'id': 66,
-            'param_cnt': 2
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 66,
-            'param_cnt': 2
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 66,
-            'param_cnt': 2
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -612,6 +624,7 @@ dsc_op_db = [
     },
     {
         'name': 'EDIT_LYRIC',
+        'desc': 'Display an edit lyric.',
         'info_default': {
             'id': 34,
             'param_cnt': 2,
@@ -1137,6 +1150,7 @@ dsc_op_db = [
     },
     {
         'name': 'LYRIC',
+        'desc': 'Display a lyric.',
         'info_default': {
             'id': 24,
             'param_cnt': 2,
@@ -1299,7 +1313,7 @@ dsc_op_db = [
     },
     {
         'name': 'MIKU_SHADOW',
-        'desc': 'Show or hide a character\'s shadow(?).',
+        'desc': 'Show or hide a character\'s shadow.',
         'info_default': {
             'id': 5,
             'param_cnt': 2,
@@ -1340,6 +1354,7 @@ dsc_op_db = [
     },
     {
         'name': 'MOUTH_ANIM',
+        'desc': 'Set a character\'s mouth animation.',
         'info_default': {
             'id': 19,
             'param_cnt': 5,
@@ -1416,21 +1431,24 @@ dsc_op_db = [
     },
     {
         'name': 'MOVIE_DISP',
-        'info_F2': {
+        'info_default': {
             'id': 68,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'visible', 'desc': 'visible or not', 'type': bool}
+            ]
         },
-        'info_FT': {
-            'id': 68,
-            'param_cnt': 1
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 68,
-            'param_cnt': 1
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 68,
-            'param_cnt': 1
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -1438,7 +1456,10 @@ dsc_op_db = [
         'desc': 'Start movie playback.',
         'info_default': {
             'id': 67,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'play', 'desc': 'play or not (must be true for AFT to do anything)', 'type': bool}
+            ]
         },
         'info_PDA12': {
             'id': None,
@@ -1549,21 +1570,25 @@ dsc_op_db = [
     },
     {
         'name': 'PV_BRANCH_MODE',
-        'info_F2': {
+        'desc': 'Restricts future commands to a either normal or success branch.',
+        'info_default': {
             'id': 65,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'branch', 'desc': 'which branch to set', 'type': type('pv_branch_enum', (StringEnum,), {'choices': ['none', 'normal', 'success']})}
+            ]
         },
-        'info_FT': {
-            'id': 65,
-            'param_cnt': 1
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 65,
-            'param_cnt': 1
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 65,
-            'param_cnt': 1
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -1892,7 +1917,7 @@ dsc_op_db = [
     },
     {
         'name': 'TARGET',
-        'desc': 'Rhythm game note',
+        'desc': 'Add a rhythm game note.',
         'info_default': {
             'id': 6,
             'param_cnt': 7,
@@ -1963,7 +1988,10 @@ dsc_op_db = [
         'name': 'TARGET_FLYING_TIME',
         'info_default': {
             'id': 58,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'time', 'desc': 'flying time', 'type': int}
+            ]
         },
         'info_PDA12': {
             'id': None,

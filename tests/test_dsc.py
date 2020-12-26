@@ -239,14 +239,26 @@ class TestDscString(unittest.TestCase):
     def test_ft_string(self):
         strings = [
             'TIME(0);',
-            'MUSIC_PLAY();',
-            'CHANGE_FIELD(1);',
-            'MIKU_DISP(chara=0, visible=False);',
-            'MIKU_MOVE(chara=0, x=1, y=2, z=3);',
-            'HAND_SCALE(chara=0, hand=left, scale=1220);',
-            'MIKU_DISP(chara=0, visible=True);',
-            'TARGET(type=tri_hold, pos_x=69, pos_y=420, angle=39, dist=1, amp=2, freq=3);',
-            'END();'
+            '  MUSIC_PLAY();',
+            '  CHANGE_FIELD(1);',
+            '  MIKU_DISP(chara=0, visible=False);',
+            '  MIKU_MOVE(chara=0, x=1, y=2, z=3);',
+            '  HAND_SCALE(chara=0, hand=left, scale=1220);',
+            '  MIKU_DISP(chara=0, visible=True);',
+            '  TARGET(type=tri_hold, pos_x=69, pos_y=420, angle=39, dist=1, amp=2, freq=3);',
+            'PV_BRANCH_MODE(normal);',
+            '    CHANGE_FIELD(2);',
+            '  TIME(1);',
+            '    CHANGE_FIELD(3);',
+            'PV_BRANCH_MODE(success);',
+            '    CHANGE_FIELD(2);',
+            '  TIME(1);',
+            '    CHANGE_FIELD(1);',
+            'PV_BRANCH_MODE(none);',
+            '  CHANGE_FIELD(4);',
+            'TIME(1);',
+            '  CHANGE_FIELD(5);',
+            '  END();'
         ]
         strings_compat = [
             'TIME(0);',
@@ -257,10 +269,23 @@ class TestDscString(unittest.TestCase):
             'HAND_SCALE(0, 0, 1220);',
             'MIKU_DISP(0, 1);',
             'TARGET(4, 69, 420, 39, 1, 2, 3);',
+            'PV_BRANCH_MODE(1);',
+            'CHANGE_FIELD(2);',
+            'TIME(1);',
+            'CHANGE_FIELD(3);',
+            'PV_BRANCH_MODE(2);',
+            'CHANGE_FIELD(2);',
+            'TIME(1);',
+            'CHANGE_FIELD(1);',
+            'PV_BRANCH_MODE(0);',
+            'CHANGE_FIELD(4);',
+            'TIME(1);',
+            'CHANGE_FIELD(5);',
             'END();'
         ]
         
         dsc = [pydsc.DscOp.from_string('FT', s) for s in strings]
         
-        self.assertEqual(pydsc.dsc_to_string(dsc), '\n'.join(strings))
-        self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True), '\n'.join(strings_compat))
+        self.maxDiff = None
+        self.assertEqual(pydsc.dsc_to_string(dsc, indent=2), '\n'.join(strings))
+        self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True, indent=0), '\n'.join(strings_compat))

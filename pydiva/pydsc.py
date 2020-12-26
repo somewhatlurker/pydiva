@@ -313,16 +313,32 @@ def to_stream(dsc, s):
     for op in dsc:
         op.write_to_stream(s)
 
-def dsc_to_string(dsc, compat_mode=False):
+def dsc_to_string(dsc, compat_mode=False, indent=2):
     """
     Get a nice string representation of an entire DSC.
     Use compat_mode if output should be readable in future versions.
     """
     
+    time_ops = ['TIME']
+    branch_ops = ['PV_BRANCH_MODE']
+    branch_param_values = ['normal', 'success']
+    branch_indent_level = 0
+    
     out = ''
     for i, op in enumerate(dsc):
+        if op.op_name in branch_ops:
+            branch_indent_level = 0
+        
+        out += ''.join([' ' for i in range(0, branch_indent_level * indent)])
+        
+        if not op.op_name in time_ops + branch_ops:
+            out += ''.join([' ' for i in range(0, indent)])
+        
         out += op.get_str(not compat_mode, compat_mode) + ';'
         if i < len(dsc) - 1:
             out += '\n'
+        
+        if op.op_name in branch_ops and op.param_values[0] in branch_param_values:
+            branch_indent_level = 1
     
     return out
