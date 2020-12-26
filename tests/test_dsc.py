@@ -10,7 +10,7 @@ module_dir = dirname(__file__)
 with open(joinpath(module_dir, 'data', 'dsc_db.json'), 'r', encoding='utf-8') as f:
     opse_db = json.load(f)
 
-game_info_keys = [('info_PDA', 'info_A12'), ('info_F2', 'info_F2'), ('info_FT', 'info_FT'), ('info_PSP1', 'info_PSP1'), ('info_PSP2', 'info_PSP2'), ('info_X', 'info_X'), ('info_F', 'info_f')]
+game_info_keys = [('info_PDA12', 'info_A12'), ('info_F2', 'info_F2'), ('info_FT', 'info_FT'), ('info_PSP1', 'info_PSP1'), ('info_PSP2', 'info_PSP2'), ('info_X', 'info_X'), ('info_F', 'info_f')]
 
 class CheckDb(unittest.TestCase):
     
