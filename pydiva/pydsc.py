@@ -28,7 +28,7 @@ def _fix_param_types(param_values, param_info):
             t = int
         
         if t == bool and type(param_values[i]) == str:
-            param_values[i] = param_values[i].lower() in ['t', 'true']
+            param_values[i] = param_values[i].lower() in ['t', 'true', '1']
         else:
             param_values[i] = t(param_values[i])
     
