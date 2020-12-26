@@ -264,15 +264,15 @@ class DscOp:
             s.write(p.to_bytes(4, byteorder=endian, signed=True))
     
     
-    def get_str(self, show_names=True):
+    def get_str(self, show_names=True, int_vars=False):
         """Returns a nicely formatted string representing this OP"""
         
         param_str = '('
         for i, v in enumerate(self.param_values):
-            if show_names and self.param_info and i < len(self.param_info) and self.param_info[i]:
-                param_str += '{}={}'.format(self.param_info[i]['name'], v)
+            if show_names and len(self.param_values) > 1 and self.param_info and i < len(self.param_info) and self.param_info[i]:
+                param_str += '{}={}'.format(self.param_info[i]['name'], int(v) if int_vars else v)
             else:
-                param_str += str(v)
+                param_str += str(int(v) if int_vars else v)
             
             if i < len(self.param_values) - 1:
                 param_str += ', '
@@ -313,12 +313,15 @@ def to_stream(dsc, s):
     for op in dsc:
         op.write_to_stream(s)
 
-def dsc_to_string(dsc):
-    """Get a nice string representation of an entire DSC"""
+def dsc_to_string(dsc, compat_mode=False):
+    """
+    Get a nice string representation of an entire DSC.
+    Use compat_mode if output should be readable in future versions.
+    """
     
     out = ''
     for i, op in enumerate(dsc):
-        out += op.get_str(True) + ';'
+        out += op.get_str(not compat_mode, compat_mode) + ';'
         if i < len(dsc) - 1:
             out += '\n'
     

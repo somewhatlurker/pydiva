@@ -66,6 +66,9 @@ class StringEnum:
     def __str__(self):
         return self.__class__.choices[self.value_int]
     
+    def __int__(self):
+        return self.value_int
+    
     def __eq__(x, y):
         cls = type(x)
         if type(y) == cls:
