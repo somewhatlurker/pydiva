@@ -225,6 +225,13 @@ def annotate_string(game, s):
     
     if param_info:
         param_ordered_indices = find_param_order(param_values, param_info, flag_invalids=True)
+        
+        for i, p in enumerate(param_info):
+            if not p:
+                continue
+            
+            if p['required'] and not i in param_ordered_indices:
+                tags += [{'start': op_str_offset + op_str.find('('), 'end': op_str_offset + len(op_str), 'name': 'invalid', 'reason': 'missing required parameter {}'.format(p['name'])}]
     else:
         param_ordered_indices = list(range(0, op_game_info['param_cnt']))
         while len(param_ordered_indices) < len(param_values):

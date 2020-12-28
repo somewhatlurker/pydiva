@@ -380,6 +380,7 @@ class TestDscUtil(unittest.TestCase):
         expect = [
             {'start': 1, 'end': 40, 'name': 'op'},
             {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 12, 'end': 40, 'name': 'invalid', 'reason': 'missing required parameter scale' },
             {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
             {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
             {'start': 23, 'end': 35, 'name': 'invalid', 'reason': 'unknown parameter name'},
@@ -392,6 +393,7 @@ class TestDscUtil(unittest.TestCase):
         expect = [
             {'start': 1, 'end': 40, 'name': 'op'},
             {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 12, 'end': 40, 'name': 'invalid', 'reason': 'missing required parameter scale' },
             {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
             {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
             {'start': 23, 'end': 35, 'name': 'invalid', 'reason': 'duplicate parameter'},
@@ -404,6 +406,7 @@ class TestDscUtil(unittest.TestCase):
         expect = [
             {'start': 0, 'end': 31, 'name': 'op'},
             {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 10, 'end': 31, 'name': 'invalid', 'reason': 'missing required parameter hand' },
             {'start': 11, 'end': 17, 'name': 'param_name', 'param_index': 0},
             {'start': 17, 'end': 18, 'name': 'param_value', 'param_index': 0},
             {'start': 20, 'end': 26, 'name': 'param_name', 'param_index': 2},
