@@ -6,6 +6,7 @@ from io import BytesIO
 from itertools import combinations
 from pydiva import pydsc
 from pydiva.pydsc_op_db import dsc_op_db, dsc_lookup_ids, dsc_lookup_names
+from pydiva.pydsc_util import annotate_string
 
 module_dir = dirname(__file__)
 
@@ -41,6 +42,8 @@ class CheckDb(unittest.TestCase):
         
         self.assertEqual(expected_ops, [])
     
+    # and some basic integrity checks on expected states of information
+    
     def test_check_none_id_matches_params_cnt(self):
         for op in dsc_op_db:
             for key in game_info_keys:
@@ -65,7 +68,7 @@ class CheckDb(unittest.TestCase):
                 if data is not None and 'param_info' in data:
                     self.assertEqual(data['param_cnt'], len(data['param_info']))
     
-    def test_check_param_info_required_and_default(self):
+    def test_check_param_info_missing_fields(self):
         for op in dsc_op_db:
             for key in game_info_keys:
                 data = op.get(key[0], op.get('info_default'))
@@ -74,6 +77,9 @@ class CheckDb(unittest.TestCase):
                     for p in data['param_info']:
                         if not p:
                             continue
+                        self.assertTrue('name' in p)
+                        self.assertTrue('desc' in p)
+                        self.assertTrue('type' in p)
                         self.assertTrue('required' in p)
                         if not p['required']:
                             self.assertTrue('default' in p)
@@ -93,6 +99,8 @@ class CheckDb(unittest.TestCase):
 
 
 class TestDscOpInit(unittest.TestCase):
+    
+    # testing of various DscOp initialisation methods
     
     def test_op_from_id(self):
         op = pydsc.DscOp.from_id('FT', 1, [39])
@@ -232,6 +240,8 @@ class TestDscOpInit(unittest.TestCase):
 
 class TestDscStream(unittest.TestCase):
     
+    # Test going from DscOps to file and back
+    
     def test_ft_stream(self):
         dsc = [
             pydsc.DscOp.from_string('FT', 'TIME(0)'),
@@ -243,15 +253,15 @@ class TestDscStream(unittest.TestCase):
             pydsc.DscOp.from_string('FT', 'END()')
         ]
         
-        with BytesIO() as s:
-            pydsc.to_stream(dsc, s)
-            s.seek(0)
-            dsc_out = pydsc.from_stream(s)
+        b = pydsc.to_bytes(dsc)
+        dsc_out = pydsc.from_bytes(b)
         
         self.assertEqual(dsc, dsc_out)
 
 
 class TestDscString(unittest.TestCase):
+    
+    # Test string output
     
     def test_ft_string(self):
         strings = [
@@ -307,23 +317,124 @@ class TestDscString(unittest.TestCase):
         self.assertEqual(pydsc.dsc_to_string(dsc, indent=2), '\n'.join(strings))
         self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True, indent=0), '\n'.join(strings_compat))
 
+
+class TestDscUtil(unittest.TestCase):
+    
+    # throw all kinds of bad input at annotate_string to make sure it doesn't randomly fail
+    
+    def test_dsc_string_annot_positional(self):
+        t = annotate_string('FT', 'HAND_SCALE(0,right, 1000)')
+        expect = [
+            {'start': 0, 'end': 25, 'name': 'op'},
+            {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 11, 'end': 12, 'name': 'param_value', 'param_index': 0},
+            {'start': 13, 'end': 18, 'name': 'param_value', 'param_index': 1},
+            {'start': 20, 'end': 24, 'name': 'param_value', 'param_index': 2},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_named(self):
+        t = annotate_string('FT', ' HAND_SCALE ( chara=0, scale = 1000, 1 ) ;')
+        expect = [
+            {'start': 1, 'end': 40, 'name': 'op'},
+            {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
+            {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
+            {'start': 23, 'end': 30, 'name': 'param_name', 'param_index': 2},
+            {'start': 31, 'end': 35, 'name': 'param_value', 'param_index': 2},
+            {'start': 37, 'end': 38, 'name': 'param_value', 'param_index': 1},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_wrong_fmt(self):
+        t = annotate_string('FT', 'HAND_SCALE 0,1,2;')
+        expect = [
+            {'start': 0, 'end': 16, 'name': 'invalid', 'reason': 'bad format'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_bad_op_name(self):
+        t = annotate_string('FT', 'BAD_SCALE(0,1,2);')
+        expect = [
+            {'start': 0, 'end': 16, 'name': 'op'},
+            {'start': 0, 'end': 9, 'name': 'op_name'},
+            {'start': 0, 'end': 9, 'name': 'invalid', 'reason': 'unknown op name'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_named_bad_name(self):
+        t = annotate_string('FT', ' HAND_SCALE ( chara=0, scala = 1000, 1 ) ;')
+        expect = [
+            {'start': 1, 'end': 40, 'name': 'op'},
+            {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
+            {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
+            {'start': 23, 'end': 35, 'name': 'invalid', 'reason': 'unknown parameter name'},
+            {'start': 37, 'end': 38, 'name': 'param_value', 'param_index': 1},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_named_dupe_name(self):
+        t = annotate_string('FT', ' HAND_SCALE ( chara=0, chara = 1000, 1 ) ;')
+        expect = [
+            {'start': 1, 'end': 40, 'name': 'op'},
+            {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
+            {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
+            {'start': 23, 'end': 35, 'name': 'invalid', 'reason': 'duplicate parameter'},
+            {'start': 37, 'end': 38, 'name': 'param_value', 'param_index': 1},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_missing_args(self):
+        t = annotate_string('FT', 'HAND_SCALE(chara=0, scale=1000);')
+        expect = [
+            {'start': 0, 'end': 31, 'name': 'op'},
+            {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 11, 'end': 17, 'name': 'param_name', 'param_index': 0},
+            {'start': 17, 'end': 18, 'name': 'param_value', 'param_index': 0},
+            {'start': 20, 'end': 26, 'name': 'param_name', 'param_index': 2},
+            {'start': 26, 'end': 30, 'name': 'param_value', 'param_index': 2},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_extra_args(self):
+        t = annotate_string('FT', 'HAND_SCALE(chara=0, 1, 2, scale=1000, 3);')
+        expect = [
+            {'start': 0, 'end': 40, 'name': 'op'},
+            {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 11, 'end': 17, 'name': 'param_name', 'param_index': 0},
+            {'start': 17, 'end': 18, 'name': 'param_value', 'param_index': 0},
+            {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 1},
+            {'start': 23, 'end': 24, 'name': 'invalid', 'reason': 'too many parameters'},
+            {'start': 26, 'end': 32, 'name': 'param_name', 'param_index': 2},
+            {'start': 32, 'end': 36, 'name': 'param_value', 'param_index': 2},
+            {'start': 38, 'end': 39, 'name': 'invalid', 'reason': 'too many parameters'},
+        ]
+        self.assertEqual(t, expect)
+
 class cprt_tests(unittest.TestCase):
     
-    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+    # test against some official DSCs (if user supplies them)
+    
+    if False and pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
         def test_dsc_real(self):
+            # seen_sigs = []
+            
             for dscfile in listdir(joinpath(module_dir, '..', 'copyright!', 'script')):
                 if not dscfile.endswith('.dsc'):
                     continue
-                print (dscfile)
+                # print (dscfile)
                 
                 with open(joinpath(module_dir, '..', 'copyright!', 'script', dscfile), 'rb') as f:
                     dsc = pydsc.from_stream(f)
-                    f.seek(12)
+                    f.seek(0)
+                    sig = f.read(12)
+                    # if not sig in seen_sigs:
+                    #     print (sig.hex())
+                    #     seen_sigs += [sig]
                     dsc_bytes_in = f.read()
                 
-                with BytesIO() as s:
-                    pydsc.to_stream(dsc, s)
-                    s.seek(12)
-                    dsc_bytes_out = s.read()
+                dsc_bytes_out = pydsc.to_bytes(dsc)[12:]
                 
                 self.assertEqual(dsc_bytes_in, dsc_bytes_out)

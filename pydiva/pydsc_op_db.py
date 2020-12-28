@@ -24,9 +24,20 @@ from pydiva.util.stringenum import StringEnum
 dsc_op_db = [
     {
         'name': 'AGEAGE_CTRL',
+        'desc': 'Set control parameters for the AgeAge Again hair effmodule effect.',
         'info_FT': {
             'id': 105,
-            'param_cnt': 8
+            'param_cnt': 8,
+            'param_info': [
+                {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
+                {'name': 'side', 'desc': 'which side to control', 'required': True, 'type': type('ageage_ctrl_side_enum', (StringEnum,), {'choices': ['both', 'left', 'right']})},
+                {'name': 'unk2', 'desc': 'should enable or disable something(?)', 'required': True, 'type': int},
+                {'name': 'scale', 'desc': 'scale of the effect?', 'required': True, 'type': int},
+                {'name': 'unk_flag4', 'desc': 'related to scaling?', 'required': False, 'default': -1, 'type': int},
+                {'name': 'unk5', 'desc': 'might enable/disable the effect?', 'required': True, 'type': int},
+                None,
+                None
+            ]
         }
     },
     {
@@ -53,9 +64,13 @@ dsc_op_db = [
     },
     {
         'name': 'AOTO_CAP',
+        'desc': 'Automatically capture frames. (probably doesn\'t work)',
         'info_FT': {
             'id': 97,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'enable', 'desc': 'enable/disable capturing', 'required': True, 'type': bool}
+            ]
         }
     },
     {
@@ -247,7 +262,7 @@ dsc_op_db = [
     },
     {
         'name': 'CHARA_SIZE',
-        'desc': 'Sets a character\'s size scale.',
+        'desc': 'Set a character\'s size scale.',
         'info_default': {
             'id': 59,
             'param_cnt': 2,
@@ -361,7 +376,7 @@ dsc_op_db = [
     },
     {
         'name': 'DATA_CAMERA_START',
-        'desc': '(Re)starts camera data(?).',
+        'desc': '(Re)start camera data(?).',
         'info_default': {
             'id': 66,
             'param_cnt': 2,
@@ -866,7 +881,7 @@ dsc_op_db = [
     },
     {
         'name': 'END',
-        'desc': 'Ends the DSC file.',
+        'desc': 'End the DSC file.',
         'info_default': {
             'id': 0,
             'param_cnt': 0
@@ -1571,7 +1586,7 @@ dsc_op_db = [
     },
     {
         'name': 'PV_BRANCH_MODE',
-        'desc': 'Restricts future commands to a either normal or success branch.',
+        'desc': 'Restrict future commands to either normal or success branch.',
         'info_default': {
             'id': 65,
             'param_cnt': 1,
@@ -1605,7 +1620,7 @@ dsc_op_db = [
     },
     {
         'name': 'PV_END',
-        'desc': 'Ends PV playback.',
+        'desc': 'End PV playback.',
         'info_default': {
             'id': 32,
             'param_cnt': 0
@@ -1987,6 +2002,7 @@ dsc_op_db = [
     },
     {
         'name': 'TARGET_FLYING_TIME',
+        'desc': 'Set the flying in time for rhythm game notes.',
         'info_default': {
             'id': 58,
             'param_cnt': 1,

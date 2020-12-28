@@ -3,104 +3,16 @@ pydsc reader and writer for Project Diva DSC files
 """
 
 from pydiva.pydsc_op_db import dsc_op_db, dsc_db_games, dsc_lookup_ids, dsc_lookup_names
-from pydiva.util.stringenum import StringEnum
+from pydiva.pydsc_formats import _dsc_types
+from pydiva.pydsc_util import fix_param_types, fix_param_cnt, reorder_named_args
+#from pydiva.util.stringenum import StringEnum
+from io import BytesIO
 
 class UnsupportedDscGameException(Exception):
     pass
 
 class UnknownDscOpException(Exception):
-    pass
-
-def _fix_param_types(param_values, param_info):
-    """
-    Corrects parameter types and resolves enums to strings for easier handling
-    """
-    
-    param_values = param_values.copy()
-    
-    for i in range(len(param_values)):
-        if param_values[i] == '':
-            param_values[i] = None
-        
-        if param_info[i]:
-            # resolve None types to correct initial type
-            if param_values[i] == None:
-                if param_info[i]['required']:
-                    raise Exception('Missing required parameter {}'.format(param_info[i]['name']))
-                else:
-                    param_values[i] = param_info[i]['default']
-            
-            t = param_info[i]['type']
-        else:
-            t = int
-        
-        if t == bool and type(param_values[i]) == str:
-            param_values[i] = param_values[i].lower() in ['t', 'true', '1']
-        else:
-            param_values[i] = t(param_values[i])
-    
-    return param_values
-
-def _fix_param_cnt(param_values, param_cnt):
-    if param_values == None:
-        pvalues = [0 for i in range(0, param_cnt)]
-    elif len(param_values) > param_cnt:
-        raise Exception('Too many values (expected {})'.format(param_cnt))
-    else:
-        pvalues = param_values
-        while len(param_values) < param_cnt:
-            pvalues += [None]
-    
-    return pvalues
-
-def _reorder_named_args(param_list, param_info):
-    """
-    Converts a split param string with named args into the positional args.
-    This is not a strictly robust conversion, but instead non-named arguments from anywhere in the list
-    will be moved around to fit in the named ones where they belong.
-    """
-    
-    nparam_move_map = []
-    seen_target_pos = []
-    
-    # build a mapping of parameters that need to be moved and remove the name from them
-    for i, p in enumerate(param_list):
-        if '=' in p:
-            pname, pval = p.split('=', 1)
-            pname = pname.strip()
-            pval = pval.strip()
-            found_target = False
-            for j, q in enumerate(param_info):
-                if q and q['name'] == pname:
-                    if j in seen_target_pos:
-                        raise Exception('Duplicate parameter: {}'.format(pname))
-                    nparam_move_map += [(i, j)]
-                    seen_target_pos += [j]
-                    found_target = True
-            
-            if not found_target:
-                raise KeyError('Unknown parameter name: {}'.format(pname))
-            
-            param_list[i] = pval
-    
-    
-    captured_args = []
-    
-    # sort the move map by reverse source position
-    nparam_move_map.sort(key=lambda p: p[0], reverse=True)
-    # remove and store the desired args, update nparam_move_map to be based on captured_args
-    for i, p in enumerate(nparam_move_map):
-        captured_args += [param_list.pop(p[0])]
-        nparam_move_map[i] = (i, p[1])
-    
-    # sort the move map by insertion position
-    nparam_move_map.sort(key=lambda p: p[1])
-    # insert the args
-    for i, j in nparam_move_map:
-        param_list.insert(j, captured_args[i])
-    
-    return param_list
-    
+    pass    
 
 class DscOp:
     """
@@ -158,12 +70,12 @@ class DscOp:
         if not op_game_info:
             raise Exception('Unexpected error accessing opcode info (op {}, game {})'.format(op_id, game))
         
-        pvalues = _fix_param_cnt(param_values, op_game_info['param_cnt'])
+        pvalues = fix_param_cnt(param_values, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
-            pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
+            pvalues = fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
+            pvalues = fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_info['name'], op_id, pvalues, op_game_info.get('param_info'))
     
@@ -179,12 +91,12 @@ class DscOp:
         if not op_game_info:
             raise UnknownDscOpException('Unknown opcode name for game {}: {}'.format(game, op_name))
         
-        pvalues = _fix_param_cnt(param_values, op_game_info['param_cnt'])
+        pvalues = fix_param_cnt(param_values, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
-            pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
+            pvalues = fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
+            pvalues = fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
@@ -221,16 +133,16 @@ class DscOp:
                 pvalues += ['']
         
         if 'param_info' in op_game_info:
-            pvalues = _reorder_named_args(pvalues, op_game_info['param_info'])
+            pvalues = reorder_named_args(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _reorder_named_args(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
+            pvalues = reorder_named_args(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
-        pvalues = _fix_param_cnt(pvalues, op_game_info['param_cnt'])
+        pvalues = fix_param_cnt(pvalues, op_game_info['param_cnt'])
         
         if 'param_info' in op_game_info:
-            pvalues = _fix_param_types(pvalues, op_game_info['param_info'])
+            pvalues = fix_param_types(pvalues, op_game_info['param_info'])
         else:
-            pvalues = _fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
+            pvalues = fix_param_types(pvalues, [None for i in range(0, op_game_info['param_cnt'])])
         
         return cls(game, op_name, op_game_info['id'], pvalues, op_game_info.get('param_info'))
     
@@ -259,7 +171,7 @@ class DscOp:
     
     def write_to_stream(self, s, endian='little'):
         if self.param_info:
-            pvalues = _fix_param_types(self.param_values, self.param_info)
+            pvalues = fix_param_types(self.param_values, self.param_info)
         else:
             pvalues = self.param_values
         
@@ -300,9 +212,18 @@ class DscOp:
 
 
 def from_stream(s):
-    """AFT-only"""
+    """Converts a DSC from a stream to a list of DscOp."""
     
-    s.seek(s.tell() + 12) # skip junk
+    og_pos = s.tell()
+    game = None
+    
+    for g, type_info in _dsc_types.items():
+        if type_info['header_regex'].match(s.read(len(type_info['header_regex'].pattern))):
+            game = g
+            break
+    
+    if not game:
+        raise UnsupportedDscGameException('Couldn\'t identify file type')
     
     out = []
     
@@ -315,14 +236,28 @@ def from_stream(s):
     
     return out
 
+def from_bytes(b):
+    """Converts a DSC from bytes to a list of DscOp."""
+    
+    with BytesIO(b) as s:
+        return from_stream(s)
+
 
 def to_stream(dsc, s):
-    """AFT-only"""
+    """Writes a DscOp list to a stream."""
     
-    s.write(b'\x21\x09\x05\x14\x41\x00\x00\x00\x00\x00\x00\x00') # header junk
+    game = dsc[0].game
+    s.write(_dsc_types[game]['header_output'])
     
     for op in dsc:
         op.write_to_stream(s)
+
+def to_bytes(dsc):
+    """Converts a DscOp list to bytes."""
+    
+    with BytesIO() as s:
+        to_stream(dsc, s)
+        return s.getvalue()
 
 def dsc_to_string(dsc, compat_mode=False, indent=2):
     """
