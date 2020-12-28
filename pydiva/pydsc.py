@@ -196,6 +196,9 @@ class DscOp:
         param_info for its details
         """
         
+        if hide_default and not show_names:
+            raise Exception('Hiding default values without showing names on parameters may make unparseable results')
+        
         out = self.op_name
         tags = [
             {'start': 0, 'end': 0, 'name': 'op'}, # placeholder
