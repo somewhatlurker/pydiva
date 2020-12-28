@@ -7,6 +7,7 @@ from itertools import combinations
 from pydiva import pydsc
 from pydiva.pydsc_op_db import dsc_op_db, dsc_lookup_ids, dsc_lookup_names
 from pydiva.pydsc_util import annotate_string
+from pydiva.util.stringenum import StringEnum
 
 module_dir = dirname(__file__)
 
@@ -96,6 +97,18 @@ class CheckDb(unittest.TestCase):
                         if c[0] == None or c[1] == None:
                             continue
                         self.assertNotEqual(c[0]['name'], c[1]['name'])
+    
+    def test_enum_choices_access(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and 'param_info' in data:
+                    for p in data['param_info']:
+                        if not p or not issubclass(p['type'], StringEnum):
+                            continue
+                        
+                        self.assertTrue(p['type'].choices)
 
 
 class TestDscOpInit(unittest.TestCase):

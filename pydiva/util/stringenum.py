@@ -7,16 +7,12 @@ class StringEnum:
     new instance using the new value.
     
     Don't directly use this class, but instead derive it:
-    `type('my_enum', (StringEnum,), {'_choices': ['choice_1', 'choice_2']})`.
+    `type('my_enum', (StringEnum,), {'choices': ['choice_1', 'choice_2']})`.
     
     Use `issubclass(my_enum, StringEnum)` to check if a class is a StringEnum.
     """
     
-    _choices = None
-    @property
-    @classmethod
-    def choices(cls):
-        return cls._choices
+    choices = None
     
     # instance vars
     # value_int = None
