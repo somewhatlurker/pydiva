@@ -425,6 +425,20 @@ class TestDscUtil(unittest.TestCase):
             {'start': 38, 'end': 39, 'name': 'invalid', 'reason': 'too many parameters'},
         ]
         self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_wrong_types(self):
+        self.maxDiff = None
+        t = annotate_string('FT', 'HAND_SCALE(0, true, left)')
+        expect = [
+            {'start': 0, 'end': 25, 'name': 'op'},
+            {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 11, 'end': 12, 'name': 'param_value', 'param_index': 0},
+            {'start': 14, 'end': 18, 'name': 'param_value', 'param_index': 1},
+            {'start': 14, 'end': 18, 'name': 'invalid', 'reason': 'cannot convert to correct type (Invalid enum value \'true\')'},
+            {'start': 20, 'end': 24, 'name': 'param_value', 'param_index': 2},
+            {'start': 20, 'end': 24, 'name': 'invalid', 'reason': 'cannot convert to correct type (invalid literal for int() with base 10: \'left\')'},
+        ]
+        self.assertEqual(t, expect)
 
 class cprt_tests(unittest.TestCase):
     

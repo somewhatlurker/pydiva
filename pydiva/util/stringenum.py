@@ -34,17 +34,20 @@ class StringEnum:
     def set_value(self, value):
         if type(value) == type(self):
             value = value.value_int
+        elif type(value) == str:
+            try: value = int(value)
+            except Exception: pass
         
         if type(value) == int:
             if value < len(self.__class__.choices):
                 self.value_int = value
             else:
-                raise KeyError('Invalid enum value {}'.format(value))
+                raise ValueError('Invalid enum value {}'.format(value))
         elif type(value) == str:
             try:
                 self.value_int = self.__class__.choices.index(value)
             except ValueError:
-                raise KeyError('Invalid enum value {}'.format(value))
+                raise ValueError('Invalid enum value \'{}\''.format(value))
         else:
             raise TypeError('value is wrong type (must be {} instance, str, or int)'.format(self.__class__.__name__))
     
