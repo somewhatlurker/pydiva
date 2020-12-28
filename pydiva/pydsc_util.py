@@ -226,13 +226,15 @@ def annotate_string(game, s):
     if param_info:
         param_ordered_indices = find_param_order(param_values, param_info, flag_invalids=True)
     else:
-        param_ordered_indices = range(0, len(param_values))
+        param_ordered_indices = list(range(0, op_game_info['param_cnt']))
+        while len(param_ordered_indices) < len(param_values):
+            param_ordered_indices += ['too many parameters']
     
     
     # parse and tag all params (fun!)
     op_param_cur_pos = op_str.find('(') + 1
     op_param_cur_num = 0
-    while (op_param_cur_num < len(param_ordered_indices)):
+    while (op_param_cur_num < len(param_values)):
         # find start of actual text instead of just being in the right syntax area
         while op_str[op_param_cur_pos] in ' 　\r\n':
             op_param_cur_pos += 1
