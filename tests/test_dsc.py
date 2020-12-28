@@ -331,7 +331,7 @@ class TestDscString(unittest.TestCase):
         self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True, indent=0), '\n'.join(strings_compat))
 
 
-class TestDscUtil(unittest.TestCase):
+class TestStringAnnot(unittest.TestCase):
     
     # throw all kinds of bad input at annotate_string to make sure it doesn't randomly fail
     
@@ -442,19 +442,36 @@ class TestDscUtil(unittest.TestCase):
             {'start': 20, 'end': 24, 'name': 'invalid', 'reason': 'cannot convert to correct type (invalid literal for int() with base 10: \'left\')'},
         ]
         self.assertEqual(t, expect)
+    
+    def test_dsc_get_annotated_str_matches(self):
+        dsc = [
+            pydsc.DscOp.from_string('FT', 'TIME(0)'),
+            pydsc.DscOp.from_string('FT', 'MUSIC_PLAY()'),
+            pydsc.DscOp.from_string('FT', 'CHANGE_FIELD(1)'),
+            pydsc.DscOp.from_string('FT', 'MIKU_DISP(chara=0, visible=False)'),
+            pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, x=1, y=2, z=3)'),
+            pydsc.DscOp.from_string('FT', 'HAND_SCALE(chara=0, hand=left, scale=1220)'),
+            pydsc.DscOp.from_string('FT', 'END()')
+        ]
+        
+        for op in dsc:
+            opstr, reftags = op.get_annotated_str()
+            t = annotate_string(op.game, opstr)
+            self.assertEqual(reftags, t)
 
 class cprt_tests(unittest.TestCase):
     
     # test against some official DSCs (if user supplies them)
+    # pretty much just round trips through some stuff to check for loss
     
-    if False and pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
         def test_dsc_real(self):
             # seen_sigs = []
-            
+            self.maxDiff = None
             for dscfile in listdir(joinpath(module_dir, '..', 'copyright!', 'script')):
                 if not dscfile.endswith('.dsc'):
                     continue
-                # print (dscfile)
+                print (dscfile)
                 
                 with open(joinpath(module_dir, '..', 'copyright!', 'script', dscfile), 'rb') as f:
                     dsc = pydsc.from_stream(f)
@@ -465,6 +482,14 @@ class cprt_tests(unittest.TestCase):
                     #     seen_sigs += [sig]
                     dsc_bytes_in = f.read()
                 
-                dsc_bytes_out = pydsc.to_bytes(dsc)[12:]
+                game = dsc[0].game
+                dsc = [op.get_annotated_str(True, False, True) for op in dsc]
+                #dsc = [op.get_annotated_str(False, True, False) for op in dsc]
+                for opstr, reftags in dsc:
+                    t = annotate_string(game, opstr)
+                    self.assertEqual(reftags, t)
                 
+                dsc = [pydsc.DscOp.from_string(game, op[0]) for op in dsc]
+                
+                dsc_bytes_out = pydsc.to_bytes(dsc)[12:]
                 self.assertEqual(dsc_bytes_in, dsc_bytes_out)

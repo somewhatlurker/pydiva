@@ -181,28 +181,66 @@ class DscOp:
             s.write(p.to_bytes(4, byteorder=endian, signed=True))
     
     
-    def get_str(self, show_names=True, int_vars=False, hide_default=True):
-        """Returns a nicely formatted string representing this OP"""
+    def get_annotated_str(self, show_names=True, int_vars=False, hide_default=True):
+        """
+        Returns a nicely formatted string representing this Op with annotated tags for syntax.
+        Output is a tuple of string and a list of dicts: ('END()', [{'start': 0, 'end': 5, 'name': 'op'},...]).
         
-        param_str = ''
+        list of tag names:
+        'op': from the DscOp's op_name until the op parameters' closing parenthesis
+        'op_name': just the op's name, excluding values and parenthesis
+        'param_name': param's name, including = sign, if present
+        'param_value': param's value
+        
+        param tags will also contain 'param_index', which is the index into
+        param_info for its details
+        """
+        
+        out = self.op_name
+        tags = [
+            {'start': 0, 'end': 0, 'name': 'op'}, # placeholder
+            {'start': 0, 'end': len(self.op_name), 'name': 'op_name'}
+        ]
+        
+        out += '('
+        cur_pos = len(out)
+        
+        out_param_cnt = 0
         for i, v in enumerate(self.param_values):
             if self.param_info and self.param_info[i]:
                 if hide_default and 'default' in self.param_info[i] and v == self.param_info[i]['default']:
-                    continue
-                if show_names and len(self.param_values) > 1:
-                    param_str += '{}={}'.format(self.param_info[i]['name'], int(v) if int_vars else v)
-                else:
-                    param_str += str(int(v) if int_vars else v)
-            else:
-                param_str += str(int(v) if int_vars else v)
+                    if not None in self.param_info: # check this because it can create false ordering when there are unused parameters
+                        continue
+                
+                if self.param_info[i] and show_names and len(self.param_values) > 1:
+                    namestr = '{}='.format(self.param_info[i]['name'])
+                    out += namestr
+                    tags += [{'start': cur_pos, 'end': cur_pos + len(namestr), 'name': 'param_name', 'param_index': i}]
+                    cur_pos += len(namestr)
             
-            param_str += ', '
+            valuestr = str(int(v) if int_vars else v)
+            out += valuestr
+            tags += [{'start': cur_pos, 'end': cur_pos + len(valuestr), 'name': 'param_value', 'param_index': i}]
+            cur_pos += len(valuestr)
+            
+            out += ', '
+            cur_pos += 2
+            out_param_cnt += 1
         
-        if len(param_str) > 0:
-            param_str = param_str[:-2]
-        param_str = '(' + param_str + ')'
+        if out_param_cnt > 0:
+            out = out[:-2]
+            cur_pos -= 2
+        out += ')'
+        cur_pos += 1
         
-        return '{}{}'.format(self.op_name, param_str)
+        tags[0]['end'] = cur_pos
+        
+        return (out, tags)
+        
+    def get_str(self, show_names=True, int_vars=False, hide_default=True):
+        """Returns a nicely formatted string representing this Op"""
+        
+        return self.get_annotated_str(show_names, int_vars, hide_default)[0]
     
     def __str__(self):
         return 'DscOp({}, {})'.format(self.game, self.get_str(True))
