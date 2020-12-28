@@ -25,6 +25,8 @@ def fix_param_types(param_values, param_info):
             
             t = param_info[i]['type']
         else:
+            if param_values[i] == None:
+                param_values[i] = 0
             t = int
         
         if t == bool and type(param_values[i]) == str:
@@ -158,7 +160,7 @@ def find_param_order(param_list, param_info, flag_invalids=False):
 def annotate_string(game, s):
     """
     Annotates a string as returned by DscOp.get_str and returns the generated tags.
-    Output is a list of dicts: [{'start': 0, 'end': 5, 'name': 'op'}].
+    Output is a list of dicts: [{'start': 0, 'end': 5, 'name': 'op'},...].
     
     list of tag names:
     'op': from the DscOp's op_name until the op parameters' closing parenthesis
@@ -169,6 +171,8 @@ def annotate_string(game, s):
     
     param tags will also contain 'param_index', which is the index into
     param_info for its details
+    
+    invalid tags will also contain 'reason', which is an error message
     """
     
     tags = []
@@ -211,6 +215,8 @@ def annotate_string(game, s):
     # iterate to preserve index when applying tags
     param_values = op_str.split('(', 1)[1].split(')')[0]
     param_values = [p.strip() for p in param_values.split(',')]
+    if param_values == ['']: # remove empty str for zero parameters
+        param_values = []
     
     #param_cnt = op_game_info['param_cnt']
     #
@@ -283,7 +289,8 @@ def annotate_string(game, s):
                 
                 tags += [{'start': op_str_offset + op_param_cur_pos, 'end': op_str_offset + name_end_pos+1, 'name': 'param_name', 'param_index': ordered_pos}]
                 tags += [{'start': op_str_offset + value_start_pos, 'end': op_str_offset + value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
-                
+            
+            # get and check type of arg
             if param_info and param_info[ordered_pos]:
                 t = param_info[ordered_pos]['type']
             else:
