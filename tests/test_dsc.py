@@ -232,6 +232,11 @@ class TestDscOpInit(unittest.TestCase):
         op = pydsc.DscOp.from_id('FT', 87, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_values[1], 1)
     
+    def test_params_missing_none_param(self):
+        op = pydsc.DscOp.from_string('FT', 'MOUTH_ANIM(chara=0, id=10, in_time=20, speed=30)')
+        self.assertEqual(op.param_values, [0, 0, 10, 20, 30]) # second param is NoneType
+    
+    
     def test_params_bool(self):
         op = pydsc.DscOp.from_name('FT', 'MIKU_DISP', [0, True])
         self.assertTrue(op.param_values[1])
@@ -482,6 +487,7 @@ class cprt_tests(unittest.TestCase):
                     #     seen_sigs += [sig]
                     dsc_bytes_in = f.read()
                 
+                # check string annotation is working fine and that it isn't way too slow
                 game = dsc[0].game
                 dsc = [op.get_annotated_str(True, False, True) for op in dsc]
                 #dsc = [op.get_annotated_str(False, True, False) for op in dsc]
