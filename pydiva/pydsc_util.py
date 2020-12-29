@@ -175,31 +175,42 @@ def annotate_string(game, s):
     invalid tags will also contain 'reason', which is an error message
     """
     
+    ws_chars = ' 　\r\n'
     tags = []
     
-    # awkward pattern to get string's start offset while stripping it down
-    # in a relatively efficient manner
+    # strip whitespace from end because we don't care about it
+    # and it won't affect indices
+    # also makes the end of the op itself be at len(op_str), which is nice
     op_str = s.rstrip()
-    op_str_offset = len(op_str) - len(op_str.lstrip())
-    op_str = op_str[op_str_offset:]
     
+    # awkward pattern to get string's start offset (first non-whitespace
+    # character) in a relatively efficient manner
+    op_str_offset = 0
+    while op_str_offset < len(op_str) and op_str[op_str_offset] in ws_chars:
+        op_str_offset += 1
+    
+    # couldn't find any content
+    if op_str_offset == len(op_str) - 1:
+        return tags
+    
+    # remove semicolon if present and re-strip
     if op_str.endswith(';'):
         op_str = op_str[:-1]
         op_str = op_str.rstrip()
      
     # basic formatting check, can't continue if it fails
-    if not '(' in op_str or op_str.startswith('(') or not op_str.endswith(')'):
-        tags += [{'start': op_str_offset, 'end': op_str_offset + len(op_str), 'name': 'invalid', 'reason': 'bad format'}]
+    # (should have some text, then parenthesis, and nested parenthesis are disallowed)
+    if op_str.count('(') != 1 or op_str.count(')') != 1 or op_str[op_str_offset] == '(' or not op_str.endswith(')'):
+        tags += [{'start': op_str_offset, 'end': len(op_str), 'name': 'invalid', 'reason': 'bad format'}]
         return tags
     
-    tags += [{'start': op_str_offset, 'end': op_str_offset + len(op_str), 'name': 'op'}]
+    tags += [{'start': op_str_offset, 'end': len(op_str), 'name': 'op'}]
     
-    op_name = op_str.split('(', 1)[0].rstrip()
-    op_name_offset = len(op_name) - len(op_name.lstrip())
-    op_name = op_name[op_name_offset:]
-    op_name_offset = op_str_offset + op_name_offset
+    # op_name is whatever comes before parenthesis open
+    op_name_offset = op_str_offset
+    op_name = op_str[op_name_offset:].split('(', 1)[0].rstrip()
     
-    # don't bother continuing onto params if the op name isn't even right
+    # don't bother continuing onto params if the op name isn't even correct
     tags += [{'start': op_name_offset, 'end': op_name_offset + len(op_name), 'name': 'op_name'}]
     if not op_name in dsc_lookup_names:
         tags += [{'start': op_name_offset, 'end': op_name_offset + len(op_name), 'name': 'invalid', 'reason': 'unknown op name'}]
@@ -218,15 +229,6 @@ def annotate_string(game, s):
     if param_values == ['']: # remove empty str for zero parameters
         param_values = []
     
-    #param_cnt = op_game_info['param_cnt']
-    #
-    #if len(param_values) > param_cnt:
-    #    pvalues = param_values[:param_cnt]
-    #else:
-    #    pvalues = param_values
-    #    while len(param_values) < param_cnt:
-    #        pvalues += ['']
-    
     param_info = op_game_info.get('param_info')
     
     if param_info:
@@ -237,7 +239,7 @@ def annotate_string(game, s):
                 continue
             
             if p['required'] and not i in param_ordered_indices:
-                tags += [{'start': op_str_offset + op_str.find('('), 'end': op_str_offset + len(op_str), 'name': 'invalid', 'reason': 'missing required parameter {}'.format(p['name'])}]
+                tags += [{'start': op_str.find('('), 'end': len(op_str), 'name': 'invalid', 'reason': 'missing required parameter {}'.format(p['name'])}]
     else:
         param_ordered_indices = list(range(0, op_game_info['param_cnt']))
         while len(param_ordered_indices) < len(param_values):
@@ -247,9 +249,9 @@ def annotate_string(game, s):
     # parse and tag all params (fun!)
     op_param_cur_pos = op_str.find('(') + 1
     op_param_cur_num = 0
-    while (op_param_cur_num < len(param_values)):
+    while op_param_cur_num < len(param_values):
         # find start of actual text instead of just being in the right syntax area
-        while op_str[op_param_cur_pos] in ' 　\r\n':
+        while op_str[op_param_cur_pos] in ws_chars:
             op_param_cur_pos += 1
         
         # find end of the syntax area
@@ -259,36 +261,36 @@ def annotate_string(game, s):
         
         # and find the actual end of the token
         op_param_cur_end_stripped = op_param_cur_end # keep stripped ver separate so can get og index later
-        while op_str[op_param_cur_end_stripped - 1] in ' 　\r\n':
+        while op_str[op_param_cur_end_stripped - 1] in ws_chars:
             op_param_cur_end_stripped -= 1
         
         ordered_pos = param_ordered_indices[op_param_cur_num]
         
         # ordered_pos not int indicates an invalid param
         if type(ordered_pos) != int:
-            tags += [{'start': op_str_offset + op_param_cur_pos, 'end': op_str_offset + op_param_cur_end_stripped, 'name': 'invalid', 'reason': str(ordered_pos)}]
+            tags += [{'start': op_param_cur_pos, 'end': op_param_cur_end_stripped, 'name': 'invalid', 'reason': str(ordered_pos)}]
         else:
             eq_pos = op_str.find('=', op_param_cur_pos, op_param_cur_end_stripped)        
             if eq_pos == -1:
                 value_start_pos = op_param_cur_pos
                 value_end_pos = op_param_cur_end_stripped
                 
-                tags += [{'start': op_str_offset + value_start_pos, 'end': op_str_offset + value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
+                tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
             else:
                 value_pos = eq_pos + 1
-                while op_str[value_pos] in ' 　\r\n':
+                while op_str[value_pos] in ws_chars:
                     value_pos += 1
                 
                 name_end_pos = eq_pos
                 # below commented code is for if it doesn't include equal sign in name
-                #while op_str[name_end_pos - 1] in ' 　\r\n':
+                #while op_str[name_end_pos - 1] in ws_chars:
                 #    name_end_pos -= 1
                 
                 value_start_pos = value_pos
                 value_end_pos = op_param_cur_end_stripped
                 
-                tags += [{'start': op_str_offset + op_param_cur_pos, 'end': op_str_offset + name_end_pos+1, 'name': 'param_name', 'param_index': ordered_pos}]
-                tags += [{'start': op_str_offset + value_start_pos, 'end': op_str_offset + value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
+                tags += [{'start': op_param_cur_pos, 'end': name_end_pos+1, 'name': 'param_name', 'param_index': ordered_pos}]
+                tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
             
             # get and check type of arg
             if param_info and param_info[ordered_pos]:
@@ -302,7 +304,7 @@ def annotate_string(game, s):
                 else:
                     t(op_str[value_start_pos:value_end_pos])
             except Exception as e:
-                tags += [{'start': op_str_offset + value_start_pos, 'end': op_str_offset + value_end_pos, 'name': 'invalid', 'reason': 'cannot convert to correct type ({})'.format(e)}]
+                tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'invalid', 'reason': 'cannot convert to correct type ({})'.format(e)}]
         
         op_param_cur_pos = op_param_cur_end + 1
         op_param_cur_num += 1

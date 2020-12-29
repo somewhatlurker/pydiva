@@ -364,10 +364,34 @@ class TestStringAnnot(unittest.TestCase):
         ]
         self.assertEqual(t, expect)
     
-    def test_dsc_string_annot_wrong_fmt(self):
+    def test_dsc_string_annot_wrong_fmt_no_parens(self):
         t = annotate_string('FT', 'HAND_SCALE 0,1,2;')
         expect = [
             {'start': 0, 'end': 16, 'name': 'invalid', 'reason': 'bad format'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_wrong_fmt_no_name(self):
+        self.maxDiff = None
+        t = annotate_string('FT', '(0, true, left)')
+        expect = [
+            {'start': 0, 'end': 15, 'name': 'invalid', 'reason': 'bad format'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_wrong_fmt_extra_parens_1(self):
+        self.maxDiff = None
+        t = annotate_string('FT', 'HAND_SCALE(0, (true, left)')
+        expect = [
+            {'start': 0, 'end': 26, 'name': 'invalid', 'reason': 'bad format'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_wrong_fmt_extra_parens_2(self):
+        self.maxDiff = None
+        t = annotate_string('FT', 'HAND_SCALE(0, true), left)')
+        expect = [
+            {'start': 0, 'end': 26, 'name': 'invalid', 'reason': 'bad format'},
         ]
         self.assertEqual(t, expect)
     
