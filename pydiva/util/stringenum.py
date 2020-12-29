@@ -6,8 +6,12 @@ class StringEnum:
     Use set_value to change value after initialisation, or just initialise a
     new instance using the new value.
     
+    Don't modify choices if you can avoid it.
+    
     Don't directly use this class, but instead derive it:
     `type('my_enum', (StringEnum,), {'choices': ['choice_1', 'choice_2']})`.
+    
+    Avoid using choices that can be interpreted as int.
     
     Use `issubclass(my_enum, StringEnum)` to check if a class is a StringEnum.
     """
@@ -19,19 +23,31 @@ class StringEnum:
     
     @classmethod
     def _check_choices_valid(cls):
+        """Check that the enum choices are valid and won't lead to issues."""
+        
         if type(cls.choices) not in (list, tuple):
             raise TypeError('StringEnum choices is wrong type (must be list or tuple)')
+        
+        for i, c in enumerate(cls.choices):
+            if type(c) != str:
+                raise TypeError('StringEnum choices element {} ({}) is wrong type (must be str)'.format(i, c))
+            
+            try:
+                int(c)
+                # raise exception if successfully converted
+                raise ValueError('StringEnum choices element {} ({}) can represent an int'.format(i, c))
+            except:
+                pass # this is actually good
     
     def __init__(self, value):
-        """
-        Initialise an instance
-        
-        """
+        """Initialise an instance from another instance, an integer choice index, or a string."""
         
         self.__class__._check_choices_valid()        
         self.set_value(value)
     
     def set_value(self, value):
+        """Set the current value from another instance, an integer choice index, or a string."""
+        
         if type(value) == type(self):
             value = value.value_int
         elif type(value) == str:
@@ -52,10 +68,14 @@ class StringEnum:
             raise TypeError('value is wrong type (must be {} instance, str, or int)'.format(self.__class__.__name__))
     
     def to_bytes(self, length, byteorder, signed=False):
+        """Convert the current value index integer to bytes."""
+        
         return self.value_int.to_bytes(length=length, byteorder=byteorder, signed=signed)
     
     @classmethod
     def from_bytes(cls, bytes, byteorder, signed=False):
+        """Set the current value index integer from bytes."""
+        
         value_int = int.from_bytes(bytes, byteorder=byteorder, signed=signed)
         return cls(value_int)
     

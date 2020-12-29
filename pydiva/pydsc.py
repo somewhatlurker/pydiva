@@ -57,7 +57,12 @@ class DscOp:
         self.param_info = param_info
     
     @classmethod
-    def from_id(cls, game, op_id, param_values=None):
+    def from_id(cls, game, op_id, param_values):
+        """
+        Returns a DscOp from opcode id, with ordered parameter values set.
+        param_values equal to None will generate dummy data (NOT default values).
+        """
+        
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         if not op_id in dsc_lookup_ids:
@@ -80,7 +85,12 @@ class DscOp:
         return cls(game, op_info['name'], op_id, pvalues, op_game_info.get('param_info'))
     
     @classmethod
-    def from_name(cls, game, op_name, param_values=None):
+    def from_name(cls, game, op_name, param_values):
+        """
+        Returns a DscOp from opcode name, with ordered parameter values set.
+        param_values equal to None will generate dummy data (NOT default values).
+        """
+        
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         if not op_name in dsc_lookup_names:
@@ -102,13 +112,17 @@ class DscOp:
     
     @classmethod
     def from_string(cls, game, op_str):
+        """
+        Returns a DscOp from a string (as returned by get_str).
+        """
+        
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         
         op_str = op_str.strip()
         if op_str.endswith(';'):
             op_str = op_str[:-1]
-        if not '(' in op_str or op_str.startswith('(') or not op_str.endswith(')'):
+        if op_str.count('(') != 1 or op_str.count(')') != 1 or op_str.startswith('(') or not op_str.endswith(')'):
             raise Exception('Invalid input string')
         
         op_name = op_str.split('(', 1)[0].strip()
@@ -148,7 +162,12 @@ class DscOp:
     
     @classmethod
     def read_from_stream(cls, game, s, endian='little'):
-        self = cls.from_id(game, int.from_bytes(s.read(4), byteorder=endian, signed=True))
+        """
+        Returns a DscOp by reading it from a binary stream.
+        """
+        
+        # no need to check read length because end of stream will generate b'' and turn into id 0
+        self = cls.from_id(game, int.from_bytes(s.read(4), byteorder=endian, signed=True), param_values=None)
         
         for i in range(0, len(self.param_values)):
             if self.param_info and self.param_info[i]:
@@ -170,6 +189,10 @@ class DscOp:
     
     
     def write_to_stream(self, s, endian='little'):
+        """
+        Writes the DscOp to a binary stream.
+        """
+        
         if self.param_info:
             pvalues = fix_param_types(self.param_values, self.param_info)
         else:
@@ -252,16 +275,22 @@ class DscOp:
         return '<DscOp object ({}, {})>'.format(self.game, self.get_str(True))
 
 
-def from_stream(s):
-    """Converts a DSC from a stream to a list of DscOp."""
+def from_stream(s, game_hint=None):
+    """
+    Converts a DSC from a stream to a list of DscOp.
+    Use game_hint to force detection as a certain type.
+    """
     
     og_pos = s.tell()
-    game = None
     
-    for g, type_info in _dsc_types.items():
-        if type_info['header_regex'].match(s.read(len(type_info['header_regex'].pattern))):
-            game = g
-            break
+    if game_hint:
+        game = game_hint
+    else:
+        game = None
+        for g, type_info in _dsc_types.items():
+            if type_info['header_regex'].match(s.read(len(type_info['header_regex'].pattern))):
+                game = g
+                break
     
     if not game:
         raise UnsupportedDscGameException('Couldn\'t identify file type')
@@ -277,11 +306,14 @@ def from_stream(s):
     
     return out
 
-def from_bytes(b):
-    """Converts a DSC from bytes to a list of DscOp."""
+def from_bytes(b, game_hint=None):
+    """
+    Converts a DSC from bytes to a list of DscOp.
+    Use game_hint to force detection as a certain type.
+    """
     
     with BytesIO(b) as s:
-        return from_stream(s)
+        return from_stream(s, game_hint)
 
 
 def to_stream(dsc, s):

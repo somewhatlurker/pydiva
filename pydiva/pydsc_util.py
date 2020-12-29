@@ -37,6 +37,11 @@ def fix_param_types(param_values, param_info):
     return param_values
 
 def fix_param_cnt(param_values, param_cnt):
+    """
+    Add placeholder parameters for missing params.
+    If param_values is None, generate dummy data instead.
+    """
+    
     if param_values == None:
         pvalues = [0 for i in range(0, param_cnt)]
     elif len(param_values) > param_cnt:
