@@ -33,12 +33,14 @@ class CheckDb(unittest.TestCase):
                 if data is None or data['id'] is None:
                     self.assertEqual(opse_data, None)
                 else:
+                    self.assertNotEqual(opse_data, None)
                     self.assertEqual(data['id'], opse_data['id'])
                     self.assertEqual(data['param_cnt'], opse_data['len'])
     
     def test_check_missing_ops(self):
         expected_ops = list(opse_db.keys())
         for op in dsc_op_db:
+            self.assertTrue(op['name'] in expected_ops)
             expected_ops.remove(op['name'])
         
         self.assertEqual(expected_ops, [])
@@ -493,7 +495,7 @@ class cprt_tests(unittest.TestCase):
     # test against some official DSCs (if user supplies them)
     # pretty much just round trips through some stuff to check for loss
     
-    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+    if False and pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
         def test_dsc_real(self):
             # seen_sigs = []
             self.maxDiff = None
