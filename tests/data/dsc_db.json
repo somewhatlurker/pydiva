@@ -33,12 +33,6 @@
             "len": 5
         }
     },
-    "AOTO_CAP": {
-        "info_FT": {
-            "id": 97,
-            "len": 1
-        }
-    },
     "AUTO_BLINK": {
         "info_F2": {
             "id": 56,
@@ -61,8 +55,12 @@
             "len": 2
         }
     },
-    "AUTO_CAPTURE_BEGIN": {
+    "AUTO_CAPTURE": {
         "info_F2": {
+            "id": 97,
+            "len": 1
+        },
+        "info_FT": {
             "id": 97,
             "len": 1
         },
@@ -327,14 +325,12 @@
             "len": 2
         }
     },
-    "COLOR_COLLE": {
-        "info_FT": {
+    "COLOR_CORRECT": {
+        "info_F2": {
             "id": 94,
             "len": 3
-        }
-    },
-    "COLOR_CORRECTION": {
-        "info_F2": {
+        },
+        "info_FT": {
             "id": 94,
             "len": 3
         },
@@ -1550,13 +1546,11 @@
             "id": 98,
             "len": 1
         },
-        "info_X": {
+        "info_FT": {
             "id": 98,
             "len": 1
-        }
-    },
-    "MAN_CAP": {
-        "info_FT": {
+        },
+        "info_X": {
             "id": 98,
             "len": 1
         }

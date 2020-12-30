@@ -63,17 +63,6 @@ dsc_op_db = [
         }
     },
     {
-        'name': 'AOTO_CAP',
-        'desc': 'Automatically capture frames. (probably doesn\'t work)',
-        'info_FT': {
-            'id': 97,
-            'param_cnt': 1,
-            'param_info': [
-                {'name': 'enable', 'desc': 'enable/disable capturing', 'required': True, 'type': bool}
-            ]
-        }
-    },
-    {
         'name': 'AUTO_BLINK',
         'info_default': {
             'id': 56,
@@ -89,14 +78,30 @@ dsc_op_db = [
         }
     },
     {
-        'name': 'AUTO_CAPTURE_BEGIN',
-        'info_F2': {
+        'name': 'AUTO_CAPTURE',
+        'desc': 'Automatically capture frames to CONT slot.',
+        'info_default': {
             'id': 97,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'enable', 'desc': 'enable/disable capturing', 'required': True, 'type': bool}
+            ]
         },
-        'info_X': {
-            'id': 97,
-            'param_cnt': 1
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -136,17 +141,30 @@ dsc_op_db = [
     },
     {
         'name': 'BLOOM',
-        'info_F2': {
+        'desc': 'Set bloom data.',
+        'info_default': {
             'id': 93,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'id', 'desc': 'bloom preset/mode?', 'required': True, 'type': int},
+                {'name': 'unk1', 'desc': 'maybe amount??', 'required': True, 'type': int}
+            ]
         },
-        'info_FT': {
-            'id': 93,
-            'param_cnt': 2
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 93,
-            'param_cnt': 2
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -170,36 +188,44 @@ dsc_op_db = [
     },
     {
         'name': 'CHARA_ALPHA',
-        'info_F2': {
+        'info_default': {
             'id': 96,
             'param_cnt': 4
         },
-        'info_FT': {
-            'id': 96,
-            'param_cnt': 4
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 96,
-            'param_cnt': 4
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
         'name': 'CHARA_COLOR',
-        'info_F2': {
+        'info_default': {
             'id': 72,
             'param_cnt': 2
         },
-        'info_FT': {
-            'id': 72,
-            'param_cnt': 2
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 72,
-            'param_cnt': 2
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 72,
-            'param_cnt': 2
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -303,21 +329,26 @@ dsc_op_db = [
         }
     },
     {
-        'name': 'COLOR_COLLE',
-        'info_FT': {
-            'id': 94,
-            'param_cnt': 3
-        }
-    },
-    {
-        'name': 'COLOR_CORRECTION',
-        'info_F2': {
+        'name': 'COLOR_CORRECT',
+        'info_default': {
             'id': 94,
             'param_cnt': 3
         },
-        'info_X': {
-            'id': 94,
-            'param_cnt': 3
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -364,12 +395,12 @@ dsc_op_db = [
     },
     {
         'name': 'DATA_CAMERA',
-        'desc': 'Set camera data.',
+        'desc': 'Load camera data.',
         'info_default': {
             'id': 13,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
                 {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         }
@@ -381,7 +412,7 @@ dsc_op_db = [
             'id': 66,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
                 {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         },
@@ -400,17 +431,31 @@ dsc_op_db = [
     },
     {
         'name': 'DOF',
-        'info_F2': {
+        'desc': 'Set depth-of-field.',
+        'info_default': {
             'id': 95,
-            'param_cnt': 3
+            'param_cnt': 3,
+            'param_info': [
+                {'name': 'enable', 'desc': 'enable/disable', 'required': True, 'type': bool},
+                {'name': 'id', 'desc': 'preset/mode?', 'required': True, 'type': int},
+                {'name': 'unk2', 'desc': 'maybe focus distance??', 'required': True, 'type': int}
+            ]
         },
-        'info_FT': {
-            'id': 95,
-            'param_cnt': 3
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_X': {
-            'id': 95,
-            'param_cnt': 3
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -1034,7 +1079,7 @@ dsc_op_db = [
             'param_cnt': 3,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
-                {'name': 'hand', 'desc': 'which hand to change', 'required': True, 'type': type('hand_scale_enum', (StringEnum,), {'choices': ['left', 'right']})},
+                {'name': 'hand', 'desc': 'which hand to change', 'required': True, 'type': type('hand_scale_hand_enum', (StringEnum,), {'choices': ['left', 'right']})},
                 {'name': 'scale', 'desc': 'scale size', 'required': True, 'type': int}
             ]
         }
@@ -1212,20 +1257,29 @@ dsc_op_db = [
     },
     {
         'name': 'MANUAL_CAPTURE',
-        'info_F2': {
+        'desc': 'Manually capture frame to chosen slot.',
+        'info_default': {
             'id': 98,
-            'param_cnt': 1
+            'param_cnt': 1,
+            'param_info': [
+                {'name': 'slot', 'desc': 'slot to capture to', 'required': True, 'type': type('capture_slot_enum', (StringEnum,), {'choices': ['A', 'B', 'C', 'D', 'E']})}
+            ]
         },
-        'info_X': {
-            'id': 98,
-            'param_cnt': 1
-        }
-    },
-    {
-        'name': 'MAN_CAP',
-        'info_FT': {
-            'id': 98,
-            'param_cnt': 1
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_F': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
