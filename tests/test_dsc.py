@@ -47,6 +47,10 @@ class CheckDb(unittest.TestCase):
     
     # and some basic integrity checks on expected states of information
     
+    def test_check_name_uppercase(self):
+        for op in dsc_op_db:
+            self.assertEqual(op['name'], op['name'].upper())
+    
     def test_check_none_id_matches_params_cnt(self):
         for op in dsc_op_db:
             for key in game_info_keys:
@@ -100,6 +104,16 @@ class CheckDb(unittest.TestCase):
                             continue
                         self.assertNotEqual(c[0]['name'], c[1]['name'])
     
+    def test_check_param_info_names_lowercase(self):
+        for op in dsc_op_db:
+            for key in game_info_keys:
+                data = op.get(key[0], op.get('info_default'))
+                
+                if data is not None and 'param_info' in data:
+                    for c in data['param_info']:
+                        if c:
+                            self.assertEqual(c['name'], c['name'].lower())
+    
     def test_enum_choices_access(self):
         for op in dsc_op_db:
             for key in game_info_keys:
@@ -149,6 +163,14 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_values, [39])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
     
+    def test_op_from_name_lowercase(self):
+        op = pydsc.DscOp.from_name('F', 'time', [39])
+        self.assertEqual(op.game, 'F')
+        self.assertEqual(op.op_id, 1)
+        self.assertEqual(op.op_name, 'TIME')
+        self.assertEqual(op.param_values, [39])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['TIME']]['info_default']['param_info'])
+    
     def test_op_from_name_auto_params(self):
         op = pydsc.DscOp.from_name('X', 'LYRIC', [1])
         self.assertEqual(op.game, 'X')
@@ -167,6 +189,14 @@ class TestDscOpInit(unittest.TestCase):
     
     def test_op_from_string(self):
         op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, z= 3, x =1,y=2 )')
+        self.assertEqual(op.game, 'FT')
+        self.assertEqual(op.op_id, 2)
+        self.assertEqual(op.op_name, 'MIKU_MOVE')
+        self.assertEqual(op.param_values, [0, 1, 2, 3])
+        self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
+    
+    def test_op_from_string_mixed_case(self):
+        op = pydsc.DscOp.from_string('FT', 'mIKU_MOvE(Chara=0, z= 3, X =1,y=2 )')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 2)
         self.assertEqual(op.op_name, 'MIKU_MOVE')
@@ -489,13 +519,26 @@ class TestStringAnnot(unittest.TestCase):
             opstr, reftags = op.get_annotated_str()
             t = annotate_string(op.game, opstr)
             self.assertEqual(reftags, t)
+    
+    def test_dsc_string_annot_mixed_case(self):
+        t = annotate_string('FT', ' HAnD_SCaLE ( cHara=0, Scale = 1000, 1 ) ;')
+        expect = [
+            {'start': 1, 'end': 40, 'name': 'op'},
+            {'start': 1, 'end': 11, 'name': 'op_name'},
+            {'start': 14, 'end': 20, 'name': 'param_name', 'param_index': 0},
+            {'start': 20, 'end': 21, 'name': 'param_value', 'param_index': 0},
+            {'start': 23, 'end': 30, 'name': 'param_name', 'param_index': 2},
+            {'start': 31, 'end': 35, 'name': 'param_value', 'param_index': 2},
+            {'start': 37, 'end': 38, 'name': 'param_value', 'param_index': 1},
+        ]
+        self.assertEqual(t, expect)
 
 class cprt_tests(unittest.TestCase):
     
     # test against some official DSCs (if user supplies them)
     # pretty much just round trips through some stuff to check for loss
     
-    if False and pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
         def test_dsc_real(self):
             # seen_sigs = []
             self.maxDiff = None

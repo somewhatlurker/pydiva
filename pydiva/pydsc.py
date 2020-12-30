@@ -51,7 +51,7 @@ class DscOp:
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         self.game = game
-        self.op_name = op_name
+        self.op_name = op_name.upper()
         self.op_id = op_id
         self.param_values = param_values
         self.param_info = param_info
@@ -91,6 +91,8 @@ class DscOp:
         param_values equal to None will generate dummy data (NOT default values).
         """
         
+        op_name = op_name.upper()
+        
         if not game in dsc_db_games:
             raise UnsupportedDscGameException('Unsupported game name: {}'.format(game))
         if not op_name in dsc_lookup_names:
@@ -125,7 +127,7 @@ class DscOp:
         if op_str.count('(') != 1 or op_str.count(')') != 1 or op_str.startswith('(') or not op_str.endswith(')'):
             raise Exception('Invalid input string')
         
-        op_name = op_str.split('(', 1)[0].strip()
+        op_name = op_str.split('(', 1)[0].strip().upper()
         if not op_name in dsc_lookup_names:
             raise UnknownDscOpException('Unknown opcode name: {}'.format(op_name))
         

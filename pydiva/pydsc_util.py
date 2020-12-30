@@ -67,7 +67,7 @@ def reorder_named_args(param_list, param_info):
     for i, p in enumerate(param_list):
         if '=' in p:
             pname, pval = p.split('=', 1)
-            pname = pname.strip()
+            pname = pname.strip().lower()
             pval = pval.strip()
             found_target = False
             for j, q in enumerate(param_info):
@@ -117,7 +117,7 @@ def find_param_order(param_list, param_info, flag_invalids=False):
     for i, p in enumerate(param_list):
         if '=' in p:
             pname = p.split('=', 1)[0]
-            pname = pname.strip()
+            pname = pname.strip().lower()
             found_target = False
             for j, q in enumerate(param_info):
                 if q and q['name'] == pname:
@@ -213,7 +213,7 @@ def annotate_string(game, s):
     
     # op_name is whatever comes before parenthesis open
     op_name_offset = op_str_offset
-    op_name = op_str[op_name_offset:].split('(', 1)[0].rstrip()
+    op_name = op_str[op_name_offset:].split('(', 1)[0].rstrip().upper()
     
     # don't bother continuing onto params if the op name isn't even correct
     tags += [{'start': op_name_offset, 'end': op_name_offset + len(op_name), 'name': 'op_name'}]
