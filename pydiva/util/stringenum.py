@@ -7,6 +7,7 @@ class StringEnum:
     new instance using the new value.
     
     Don't modify choices if you can avoid it.
+    Choices are not per-instance.
     
     Don't directly use this class, but instead derive it:
     `type('my_enum', (StringEnum,), {'choices': ['choice_1', 'choice_2']})`.
