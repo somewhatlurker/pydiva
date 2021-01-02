@@ -5,6 +5,54 @@ from pydiva.util.fixeddecimal import FixedDecimal
 from pydiva.util.divatime import DivaTime
 
 
+string_enum_fruits = type('string_enum_fruits', (StringEnum,), {'choices': ['apple', 'banana', 'pear', 'cantaloupe', 'watermelon', 'kiwi', 'mango']})
+
+class TestStringEnum(unittest.TestCase):
+    
+    def test_int(self):
+        i = string_enum_fruits(0)
+        self.assertEqual(i, 0)
+        i = string_enum_fruits(2)
+        self.assertEqual(i, 2)
+        
+        # integer string
+        i = string_enum_fruits('6')
+        self.assertEqual(i, 6)
+        
+        try: # exception for bad index
+            i = string_enum_fruits(7)
+            self.assertTrue(False) # should never reach here
+        except Exception as e:
+            self.assertEqual(type(e), ValueError)
+    
+    def test_str(self):
+        i = string_enum_fruits('apple')
+        self.assertEqual(i, 0)
+        self.assertEqual(repr(i), 'string_enum_fruits(apple)')
+        self.assertEqual(str(i), 'apple')
+        i = string_enum_fruits('pear')
+        self.assertEqual(i, 2)
+        self.assertEqual(repr(i), 'string_enum_fruits(pear)')
+        self.assertEqual(str(i), 'pear')
+        i = string_enum_fruits('mango')
+        self.assertEqual(i, 6)
+        self.assertEqual(repr(i), 'string_enum_fruits(mango)')
+        self.assertEqual(str(i), 'mango')
+        
+        try: # exception for bad choice
+            i = string_enum_fruits('lemon')
+            self.assertTrue(False) # should never reach here
+        except Exception as e:
+            self.assertEqual(type(e), ValueError)
+    
+    def test_eq(self):
+        i = string_enum_fruits('apple')
+        j = string_enum_fruits(0)
+        self.assertEqual(i, j)
+        
+        j = string_enum_fruits(1)
+        self.assertNotEqual(i, j)
+
 scaled_int_0_1000 = type('scaled_int_0_1000', (ScaledInt,), {'value_min': 0, 'value_max': 1000})
 scaled_int_100_200 = type('scaled_int_100_200', (ScaledInt,), {'value_min': 100, 'value_max': 200})
 
