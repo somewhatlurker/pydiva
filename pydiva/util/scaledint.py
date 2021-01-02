@@ -61,7 +61,7 @@ class ScaledInt(int):
     
     def __str__(self):
         value = float((int(self) - self.__class__.value_min) / (self.__class__.value_max - self.__class__.value_min)) * 100
-        return '{:.2f}%'.format(value)
+        return '{:.2f}'.format(value).rstrip('0').rstrip('.') + '%'
     
     
     @staticmethod

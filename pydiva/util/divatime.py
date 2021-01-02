@@ -107,7 +107,7 @@ class DivaTime(int):
             value = '0' + value
         
         value = value[:-self.__class__._second_decimals] + '.' + value[-self.__class__._second_decimals:] # insert point
-        value = value.rstrip('0.') # remove trailing zeroes and point
+        value = value.rstrip('0').rstrip('.') # remove trailing zeroes and point
         out += value
         
         return out
