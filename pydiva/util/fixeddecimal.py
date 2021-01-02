@@ -3,7 +3,10 @@ class FixedDecimal(int):
     Works like a regular int, but string conversions have decimal places
     that will be converted (eg. int 2000 <-> str '20.00')
     
-    Just initialise a rather than trying to change value after creation.
+    Just initialise a new instance rather than trying to change value after
+    creation.
+    Integer arithmetic (add, sub, mul, div) works on the internal int.
+    For other stuff or floating point arithmetic just rely on type conversion.
     
     Don't modify dec_places if you can avoid it.
     It's are not per-instance.
@@ -74,3 +77,42 @@ class FixedDecimal(int):
         
         value = value[:-self.__class__.dec_places] + '.' + value[-self.__class__.dec_places:] # insert point
         return value
+    
+    
+    @staticmethod
+    def _arith(fn, x, y):
+        r = fn(y)
+        if r == NotImplemented:
+            return r
+        else:
+            return x.__class__.__new__(x.__class__, r)
+    
+    def __add__(x, y):
+        return x.__class__._arith(super().__add__, x, y)
+    
+    def __radd__(x, y):
+        return x.__class__._arith(super().__radd__, x, y)
+    
+    def __sub__(x, y):
+        return x.__class__._arith(super().__sub__, x, y)
+    
+    def __rsub__(x, y):
+        return x.__class__._arith(super().__rsub__, x, y)
+    
+    def __mul__(x, y):
+        return x.__class__._arith(super().__mul__, x, y)
+    
+    def __rmul__(x, y):
+        return x.__class__._arith(super().__rmul__, x, y)
+    
+    #def __truediv__(x, y):
+    #    return x.__class__._arith(super().__truediv__, x, y)
+    
+    #def __rtruediv__(x, y):
+    #    return x.__class__._arith(super().__rtruediv__, x, y)
+    
+    def __floordiv__(x, y):
+        return x.__class__._arith(super().__floordiv__, x, y)
+    
+    def __rfloordiv__(x, y):
+        return x.__class__._arith(super().__rfloordiv__, x, y)
