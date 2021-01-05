@@ -237,8 +237,8 @@ class DscOp:
         for i, v in enumerate(self.param_values):
             if self.param_info and self.param_info[i]:
                 if hide_default and 'default' in self.param_info[i] and v == self.param_info[i]['default']:
-                    if not None in self.param_info: # check this because it can create false ordering when there are unused parameters
-                        continue
+                    if not None in self.param_info[i:]: # check this because it can create false ordering when there are unused parameters
+                        continue                        # (None arg detected as previously ommited arg positionally)
                 
                 if self.param_info[i] and show_names and len(self.param_values) > 1:
                     namestr = '{}='.format(self.param_info[i]['name'])
