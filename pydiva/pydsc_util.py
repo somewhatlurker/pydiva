@@ -195,7 +195,7 @@ def annotate_string(game, s):
         op_str_offset += 1
     
     # couldn't find any content
-    if op_str_offset == len(op_str) - 1:
+    if op_str_offset == len(op_str):
         return tags
     
     # remove semicolon if present and re-strip

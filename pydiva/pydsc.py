@@ -334,9 +334,10 @@ def to_bytes(dsc):
         to_stream(dsc, s)
         return s.getvalue()
 
-def dsc_to_string(dsc, compat_mode=False, indent=2):
+def dsc_to_annotated_string(dsc, compat_mode=False, indent=2):
     """
-    Get a nice string representation of an entire DSC.
+    Get a nice string representation of an entire DSC, complete with tags like DscOp.get_annotated_str.
+    Returns a tuple of (text, tags)
     Use compat_mode if output should be readable in future versions.
     """
     
@@ -346,6 +347,8 @@ def dsc_to_string(dsc, compat_mode=False, indent=2):
     indent_level = 1
     
     out = ''
+    out_len = 0
+    tags = []
     for i, op in enumerate(dsc):
         if op.op_name in branch_ops:
             if op.param_values[0] in branch_param_values:
@@ -354,10 +357,29 @@ def dsc_to_string(dsc, compat_mode=False, indent=2):
                 indent_level = 1
         
         if not op.op_name in time_ops + branch_ops:
-            out += ''.join([' ' for i in range(0, indent_level * indent)])
+            s = ''.join([' ' for i in range(0, indent_level * indent)])
+            out += s
+            out_len += len(s)
         
-        out += op.get_str(not compat_mode, compat_mode, not compat_mode) + ';'
+        s, optags = op.get_annotated_str(not compat_mode, compat_mode, not compat_mode)
+        s += ';'
+        for t in optags:
+            t['start'] += out_len
+            t['end'] += out_len
+        out += s
+        out_len += len(s)
+        tags += optags
+        
         if i < len(dsc) - 1:
             out += '\n'
+            out_len += 1
     
-    return out
+    return (out, tags)
+
+def dsc_to_string(dsc, compat_mode=False, indent=2):
+    """
+    Get a nice string representation of an entire DSC.
+    Use compat_mode if output should be readable in future versions.
+    """
+    
+    return dsc_to_annotated_string(dsc, compat_mode, indent)[0]
