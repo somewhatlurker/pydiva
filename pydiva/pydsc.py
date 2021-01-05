@@ -100,7 +100,7 @@ class DscOp:
         
         op_info = dsc_op_db[dsc_lookup_names[op_name]]
         op_game_info = op_info.get('info_{}'.format(game), op_info.get('info_default'))
-        if not op_game_info:
+        if not op_game_info or op_game_info['id'] == None:
             raise UnknownDscOpException('Unknown opcode name for game {}: {}'.format(game, op_name))
         
         pvalues = fix_param_cnt(param_values, op_game_info['param_cnt'])
@@ -133,7 +133,7 @@ class DscOp:
         
         op_info = dsc_op_db[dsc_lookup_names[op_name]]
         op_game_info = op_info.get('info_{}'.format(game), op_info.get('info_default'))
-        if not op_game_info:
+        if not op_game_info or op_game_info['id'] == None:
             raise UnknownDscOpException('Unknown opcode name for game {}: {}'.format(game, op_name))
         
         param_values = op_str.split('(', 1)[1].split(')')[0]

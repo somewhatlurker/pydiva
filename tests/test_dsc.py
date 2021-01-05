@@ -187,6 +187,13 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_values, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
     
+    def test_op_from_name_none_id(self):
+        try:
+            op = pydsc.DscOp.from_name('PDA12', 'CHARA_HEIGHT_ADJUST', [])
+            self.assertTrue(False) # should fail with UnknownDscOpException
+        except pydsc.UnknownDscOpException:
+            pass
+    
     def test_op_from_string(self):
         op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, z= 3, x =1,y=2 )')
         self.assertEqual(op.game, 'FT')
@@ -243,6 +250,13 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.op_name, 'HAND_SCALE')
         self.assertEqual(op.param_values, [0, hand_scale_enum('right'), 1000])
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['HAND_SCALE']]['info_FT']['param_info'])
+    
+    def test_op_from_string_none_id(self):
+        try:
+            op = pydsc.DscOp.from_string('PDA12', 'CHARA_HEIGHT_ADJUST()')
+            self.assertTrue(False) # should fail with UnknownDscOpException
+        except pydsc.UnknownDscOpException:
+            pass
     
     def test_params_enum_from_int(self):
         op = pydsc.DscOp.from_id('FT', 87, [0, 1, 1000])

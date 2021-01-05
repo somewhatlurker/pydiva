@@ -223,7 +223,7 @@ def annotate_string(game, s):
     
     op_info = dsc_op_db[dsc_lookup_names[op_name]]
     op_game_info = op_info.get('info_{}'.format(game), op_info.get('info_default'))
-    if not op_game_info:
+    if not op_game_info or op_game_info['id'] == None:
         tags += [{'start': op_name_offset, 'end': op_name_offset + len(op_name), 'name': 'invalid', 'reason': 'op not valid for game {}'.format(game)}]
         return tags
     
