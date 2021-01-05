@@ -20,6 +20,7 @@ additionally, an id of None indicates an unsupported opcode
 """
 
 from pydiva.util.stringenum import StringEnum
+from pydiva.util.divatime import DivaTime
 
 dsc_op_db = [
     {
@@ -127,9 +128,14 @@ dsc_op_db = [
     },
     {
         'name': 'BAR_TIME_SET',
+        'desc': 'Set the length of a measure/bar.',
         'info_default': {
             'id': 28,
-            'param_cnt': 2
+            'param_cnt': 2,
+            'param_info': [
+                {'name': 'bpm', 'desc': 'BPM to use for calculation', 'required': True, 'type': int},
+                {'name': 'beats', 'desc': 'number of quarter note beats - 1 (3 for 4/4)', 'required': True, 'type': int}
+            ]
         }
     },
     {
@@ -690,7 +696,7 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'id', 'desc': 'lyric line number', 'required': True, 'type': int},
-                {'name': 'end_time', 'desc': 'time to hide lyric at', 'required': True, 'type': int}
+                {'name': 'end_time', 'desc': 'time to hide lyric at', 'required': True, 'type': DivaTime}
             ]
         },
         'info_PDA12': {
@@ -2061,7 +2067,7 @@ dsc_op_db = [
             'id': 58,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'time', 'desc': 'flying time', 'required': True, 'type': int}
+                {'name': 'time', 'desc': 'flying time', 'required': True, 'type': DivaTime}
             ]
         },
         'info_PDA12': {
@@ -2086,7 +2092,7 @@ dsc_op_db = [
         'info_default': {
             'id': 1,
             'param_cnt': 1,
-            'param_info': [{'name': 'time', 'desc': 'time to wait until', 'required': True, 'type': int}]
+            'param_info': [{'name': 'time', 'desc': 'time to wait until', 'required': True, 'type': DivaTime}]
         }
     },
     {

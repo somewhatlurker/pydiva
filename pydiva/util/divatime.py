@@ -2,7 +2,7 @@ class DivaTime(int):
     """
     Works like a regular int, but string conversions are formatted like
     timecodes.
-    (eg. int 62000003 <-> str '1:02.003')
+    (eg. int 6200003 <-> str '1:02.00003')
     
     Just initialise a new instance rather than trying to change value after
     creation.
@@ -10,7 +10,7 @@ class DivaTime(int):
     For other stuff or floating point arithmetic just rely on type conversion.
     """
     
-    _second_decimals = 6
+    _second_decimals = 5
     _len_second = 1 * 10**_second_decimals
     _len_minute = 60 * _len_second
     _len_hour = 60 * _len_minute
