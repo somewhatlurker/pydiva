@@ -4,7 +4,8 @@ opcodes have name, optional description, and optional game-specific info dicts
 
 info dicts have id, param_cnt, and optional param_info
 param_info is a list with len == param_cnt, where each element is a dict or None
-param_info dicts have name, desc, and type
+param_info dicts have name, desc, type, required.
+Non-required params also have default.
 
 if a param_info type is derived from pydiva.util.stringenum.StringEnum
 (`issubclass(type, StringEnum)`), use .choices to get a list of valid strings.
@@ -406,7 +407,7 @@ dsc_op_db = [
             'id': 13,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'mode', 'desc': 'camera mode/type?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
                 {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         }
@@ -418,7 +419,7 @@ dsc_op_db = [
             'id': 66,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'mode', 'desc': 'camera mode?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
+                {'name': 'mode', 'desc': 'camera mode/type?', 'required': True, 'type': type('data_camera_mode_enum', (StringEnum,), {'choices': ['unk0', 'unk1', 'unk2']})},
                 {'name': 'id', 'desc': 'camera number?', 'required': True, 'type': int}
             ]
         },
