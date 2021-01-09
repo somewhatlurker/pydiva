@@ -12,6 +12,13 @@ def fix_param_types(param_values, param_info):
     param_values = param_values.copy()
     
     for i in range(len(param_values)):
+        if type(param_values[i]) == str and param_values[i].startswith('i'):
+            try:
+                param_values[i] = int(param_values[i][1:])
+                continue
+            except Exception:
+                pass # maybe it's still legit for an enum
+        
         if param_values[i] == '':
             param_values[i] = None
         
@@ -298,18 +305,27 @@ def annotate_string(game, s):
                 tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
             
             # get and check type of arg
-            if param_info and param_info[ordered_pos]:
-                t = param_info[ordered_pos]['type']
-            else:
-                t = int
+            forced_int = False
+            if op_str[value_start_pos] == 'i':
+                try:
+                    int(op_str[value_start_pos+1:value_end_pos])
+                    forced_int = True
+                except Exception:
+                    pass # maybe it's still legit for an enum
             
-            try:
-                if t == bool:
-                    op_str[value_start_pos:value_end_pos].lower() in ['t', 'true', '1']
+            if not forced_int:
+                if param_info and param_info[ordered_pos]:
+                    t = param_info[ordered_pos]['type']
                 else:
-                    t(op_str[value_start_pos:value_end_pos])
-            except Exception as e:
-                tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'invalid', 'reason': 'cannot convert to correct type ({})'.format(e)}]
+                    t = int
+                
+                try:
+                    if t == bool:
+                        op_str[value_start_pos:value_end_pos].lower() in ['t', 'true', '1']
+                    else:
+                        t(op_str[value_start_pos:value_end_pos])
+                except Exception as e:
+                    tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'invalid', 'reason': 'cannot convert to correct type ({})'.format(e)}]
         
         op_param_cur_pos = op_param_cur_end + 1
         op_param_cur_num += 1

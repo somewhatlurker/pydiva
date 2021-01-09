@@ -195,7 +195,7 @@ class TestDscOpInit(unittest.TestCase):
             pass
     
     def test_op_from_string(self):
-        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, z= 3, x =1,y=2 )')
+        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(chara=0, z= i3, x =i1,y=i2 )')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 2)
         self.assertEqual(op.op_name, 'MIKU_MOVE')
@@ -203,7 +203,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
     
     def test_op_from_string_mixed_case(self):
-        op = pydsc.DscOp.from_string('FT', 'mIKU_MOvE(Chara=0, z= 3, X =1,y=2 )')
+        op = pydsc.DscOp.from_string('FT', 'mIKU_MOvE(Chara=0, z= i3, X =i1,y=i2 )')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 2)
         self.assertEqual(op.op_name, 'MIKU_MOVE')
@@ -211,7 +211,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['MIKU_MOVE']]['info_default']['param_info'])
     
     def test_op_from_string_sparse(self):
-        op = pydsc.DscOp.from_string('FT', 'TARGET(type=cross, pos_x=1, pos_y=2, 3, amp=5)')
+        op = pydsc.DscOp.from_string('FT', 'TARGET(type=cross, pos_x=i1, pos_y=i2, i3, amp=i5)')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 6)
         self.assertEqual(op.op_name, 'TARGET')
@@ -220,7 +220,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, pinfo)
     
     def test_op_from_string_positional(self):
-        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(0, 1,2, 3)')
+        op = pydsc.DscOp.from_string('FT', 'MIKU_MOVE(0, i1,i2, i3)')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 2)
         self.assertEqual(op.op_name, 'MIKU_MOVE')
@@ -244,7 +244,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_info, dsc_op_db[dsc_lookup_names['LYRIC']]['info_default']['param_info'])
     
     def test_op_from_string_params_enum(self):
-        op = pydsc.DscOp.from_string('FT', 'HAND_SCALE(0, hand=right, 1000)')
+        op = pydsc.DscOp.from_string('FT', 'HAND_SCALE(0, hand=right, i1000)')
         self.assertEqual(op.game, 'FT')
         self.assertEqual(op.op_id, 87)
         self.assertEqual(op.op_name, 'HAND_SCALE')
@@ -279,7 +279,7 @@ class TestDscOpInit(unittest.TestCase):
         self.assertEqual(op.param_values[1], 1)
     
     def test_params_missing_none_param(self):
-        op = pydsc.DscOp.from_string('FT', 'MOUTH_ANIM(chara=0, id=10, in_time=20, speed=30)')
+        op = pydsc.DscOp.from_string('FT', 'MOUTH_ANIM(chara=0, id=10, in_time=i20, speed=i30)')
         self.assertEqual(op.param_values, [0, 0, 10, 20, 30]) # second param is NoneType
     
     
@@ -333,10 +333,10 @@ class TestDscString(unittest.TestCase):
             '  MUSIC_PLAY();',
             '  CHANGE_FIELD(1);',
             '  MIKU_DISP(chara=0, visible=False);',
-            '  MIKU_MOVE(chara=0, x=1, y=2, z=3);',
-            '  HAND_SCALE(chara=0, hand=left, scale=1220);',
+            '  MIKU_MOVE(chara=0, x=1.000, y=2.000, z=3.000);',
+            '  HAND_SCALE(chara=0, hand=left, scale=122%);',
             '  MIKU_DISP(chara=0, visible=True);',
-            '  TARGET(type=tri_hold, pos_x=69, pos_y=420, angle=39, dist=1, amp=2, freq=3);',
+            '  TARGET(type=tri_hold, pos_x=69.000, pos_y=420.000, angle=39.000, dist=1.000, amp=2.000, freq=3);',
             'PV_BRANCH_MODE(normal);',
             '    CHANGE_FIELD(2);',
             'TIME(1);',
@@ -352,26 +352,26 @@ class TestDscString(unittest.TestCase):
             '  END();'
         ]
         strings_compat = [
-            'TIME(0);',
+            'TIME(i0);',
             'MUSIC_PLAY();',
-            'CHANGE_FIELD(1);',
-            'MIKU_DISP(0, 0);',
-            'MIKU_MOVE(0, 1, 2, 3);',
-            'HAND_SCALE(0, 0, 1220);',
-            'MIKU_DISP(0, 1);',
-            'TARGET(4, 69, 420, 39, 1, 2, 3);',
-            'PV_BRANCH_MODE(1);',
-            'CHANGE_FIELD(2);',
-            'TIME(100000);',
-            'CHANGE_FIELD(3);',
-            'PV_BRANCH_MODE(2);',
-            'CHANGE_FIELD(2);',
-            'TIME(100000);',
-            'CHANGE_FIELD(1);',
-            'PV_BRANCH_MODE(0);',
-            'CHANGE_FIELD(4);',
-            'TIME(100000);',
-            'CHANGE_FIELD(5);',
+            'CHANGE_FIELD(i1);',
+            'MIKU_DISP(i0, i0);',
+            'MIKU_MOVE(i0, i1000, i2000, i3000);',
+            'HAND_SCALE(i0, i0, i1220);',
+            'MIKU_DISP(i0, i1);',
+            'TARGET(i4, i69000, i420000, i39000, i1000, i2000, i3);',
+            'PV_BRANCH_MODE(i1);',
+            'CHANGE_FIELD(i2);',
+            'TIME(i100000);',
+            'CHANGE_FIELD(i3);',
+            'PV_BRANCH_MODE(i2);',
+            'CHANGE_FIELD(i2);',
+            'TIME(i100000);',
+            'CHANGE_FIELD(i1);',
+            'PV_BRANCH_MODE(i0);',
+            'CHANGE_FIELD(i4);',
+            'TIME(i100000);',
+            'CHANGE_FIELD(i5);',
             'END();'
         ]
         
@@ -380,6 +380,7 @@ class TestDscString(unittest.TestCase):
         self.maxDiff = None
         self.assertEqual(pydsc.dsc_to_string(dsc, indent=2), '\n'.join(strings))
         self.assertEqual(pydsc.dsc_to_string(dsc, compat_mode=True, indent=0), '\n'.join(strings_compat))
+        self.assertEqual(dsc, [pydsc.DscOp.from_string('FT', s) for s in strings_compat])
 
 
 class TestStringAnnot(unittest.TestCase):
@@ -394,6 +395,17 @@ class TestStringAnnot(unittest.TestCase):
             {'start': 11, 'end': 12, 'name': 'param_value', 'param_index': 0},
             {'start': 13, 'end': 18, 'name': 'param_value', 'param_index': 1},
             {'start': 20, 'end': 24, 'name': 'param_value', 'param_index': 2},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_positional_compat(self):
+        t = annotate_string('FT', 'HAND_SCALE(i0,i1, i1000)')
+        expect = [
+            {'start': 0, 'end': 24, 'name': 'op'},
+            {'start': 0, 'end': 10, 'name': 'op_name'},
+            {'start': 11, 'end': 13, 'name': 'param_value', 'param_index': 0},
+            {'start': 14, 'end': 16, 'name': 'param_value', 'param_index': 1},
+            {'start': 18, 'end': 23, 'name': 'param_value', 'param_index': 2},
         ]
         self.assertEqual(t, expect)
     

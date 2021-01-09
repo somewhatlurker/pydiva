@@ -22,6 +22,11 @@ additionally, an id of None indicates an unsupported opcode
 
 from pydiva.util.stringenum import StringEnum
 from pydiva.util.divatime import DivaTime
+from pydiva.util.fixeddecimal import FixedDecimal
+from pydiva.util.scaledint import ScaledInt
+
+fixeddecimal_3 = type('fixeddecimal_3', (FixedDecimal,), {'dec_places': 3})
+scaledint_pct_3dec = type('scaledint_pct_3dec', (ScaledInt,), {'value_min': 0, 'value_max': 1000})
 
 dsc_op_db = [
     {
@@ -1087,7 +1092,7 @@ dsc_op_db = [
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
                 {'name': 'hand', 'desc': 'which hand to change', 'required': True, 'type': type('hand_scale_hand_enum', (StringEnum,), {'choices': ['left', 'right']})},
-                {'name': 'scale', 'desc': 'scale size', 'required': True, 'type': int}
+                {'name': 'scale', 'desc': 'scale size', 'required': True, 'type': scaledint_pct_3dec}
             ]
         }
     },
@@ -1337,27 +1342,27 @@ dsc_op_db = [
             'param_cnt': 4,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
-                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
-                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
-                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': fixeddecimal_3}
             ]
         },
         'info_PDA12': {
             'id': 2,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
-                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
-                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': fixeddecimal_3}
             ]
         },
         'info_PSP1': {
             'id': 2,
             'param_cnt': 3,
             'param_info': [
-                {'name': 'x', 'desc': 'x position', 'required': True, 'type': int},
-                {'name': 'y', 'desc': 'y position', 'required': True, 'type': int},
-                {'name': 'z', 'desc': 'z position', 'required': True, 'type': int}
+                {'name': 'x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'z', 'desc': 'z position', 'required': True, 'type': fixeddecimal_3}
             ]
         }
     },
@@ -1369,21 +1374,21 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'chara', 'desc': 'chara slot', 'required': True, 'type': int},
-                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': fixeddecimal_3}
             ]
         },
         'info_PDA12': {
             'id': 3,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': fixeddecimal_3}
             ]
         },
         'info_PSP1': {
             'id': 3,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': int}
+                {'name': 'angle', 'desc': 'angle', 'required': True, 'type': fixeddecimal_3}
             ]
         }
     },
@@ -1439,7 +1444,7 @@ dsc_op_db = [
                 None, # not even read in aft
                 {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
                 {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int},
             ]
         },
         'info_PDA12': {
@@ -1448,7 +1453,7 @@ dsc_op_db = [
             'param_info': [
                 {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
                 {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int},
             ]
         },
         'info_PSP1': {
@@ -1457,7 +1462,7 @@ dsc_op_db = [
             'param_info': [
                 {'name': 'id', 'desc': 'mouth animation number', 'required': True, 'type': int},
                 {'name': 'in_time', 'desc': 'animation in time? (ms)', 'required': False, 'default': -1, 'type': int},
-                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int}
+                {'name': 'speed', 'desc': 'animation speed? (ms)', 'required': False, 'default': -1, 'type': int},
             ]
         }
     },
@@ -2000,11 +2005,11 @@ dsc_op_db = [
             'param_cnt': 7,
             'param_info': [
                 {'name': 'type', 'desc': 'note type id', 'required': True, 'type': int},
-                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': int},
-                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': int},
-                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': int},
-                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': 300000, 'type': int},
-                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': 500, 'type': int},
+                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': fixeddecimal_3(300000), 'type': fixeddecimal_3},
+                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': fixeddecimal_3(500), 'type': fixeddecimal_3},
                 {'name': 'freq', 'desc': 'flying wave frequency', 'required': False, 'default': 0, 'type': int}
             ]
         },
@@ -2020,13 +2025,13 @@ dsc_op_db = [
                     'unimp_chainstar', 'chainslide_l', 'chainslide_r',
                     'unk17',
                     'tri_success', 'circ_success', 'cross_success', 'square_success',
-                    'unim_star_success', 'slide_l_success', 'slide_r_success'
+                    'unimp_star_success', 'slide_l_success', 'slide_r_success'
                 ]})},
-                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': int},
-                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': int},
-                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': int},
-                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': 300000, 'type': int},
-                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': 500, 'type': int},
+                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': fixeddecimal_3(300000), 'type': fixeddecimal_3},
+                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': fixeddecimal_3(500), 'type': fixeddecimal_3},
                 {'name': 'freq', 'desc': 'flying wave frequency', 'required': False, 'default': 0, 'type': int}
             ]
         },

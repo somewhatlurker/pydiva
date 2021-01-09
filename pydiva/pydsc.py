@@ -246,7 +246,11 @@ class DscOp:
                     tags += [{'start': cur_pos, 'end': cur_pos + len(namestr), 'name': 'param_name', 'param_index': i}]
                     cur_pos += len(namestr)
             
-            valuestr = str(int(v) if int_vars else v)
+            if int_vars:
+                valuestr = 'i'
+                valuestr += str(int(v))
+            else:
+                valuestr = str(v)
             out += valuestr
             tags += [{'start': cur_pos, 'end': cur_pos + len(valuestr), 'name': 'param_value', 'param_index': i}]
             cur_pos += len(valuestr)
