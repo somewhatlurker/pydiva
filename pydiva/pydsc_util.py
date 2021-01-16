@@ -273,7 +273,7 @@ def annotate_string(game, s):
         
         # and find the actual end of the token
         op_param_cur_end_stripped = op_param_cur_end # keep stripped ver separate so can get og index later
-        while op_str[op_param_cur_end_stripped - 1] in ws_chars:
+        while op_param_cur_end_stripped > op_param_cur_pos and op_str[op_param_cur_end_stripped - 1] in ws_chars:
             op_param_cur_end_stripped -= 1
         
         ordered_pos = param_ordered_indices[op_param_cur_num]
