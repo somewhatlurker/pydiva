@@ -140,7 +140,7 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'bpm', 'desc': 'BPM to use for calculation', 'required': True, 'type': int},
-                {'name': 'beats', 'desc': 'number of quarter note beats - 1 (3 for 4/4)', 'required': True, 'type': int}
+                {'name': 'beats', 'desc': 'number of quarter note beats minus 1 (3 for 4/4)', 'required': True, 'type': int}
             ]
         }
     },
