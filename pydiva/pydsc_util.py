@@ -238,7 +238,7 @@ def annotate_string(game, s):
     # iterate to preserve index when applying tags
     param_values = op_str.split('(', 1)[1].split(')')[0]
     param_values = [p.strip() for p in param_values.split(',')]
-    if param_values == ['']: # remove empty str for zero parameters
+    if op_game_info['param_cnt'] == 0 and param_values == ['']: # remove empty str for zero parameters
         param_values = []
     
     param_info = op_game_info.get('param_info')

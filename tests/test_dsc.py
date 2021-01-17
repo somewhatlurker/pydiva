@@ -558,6 +558,34 @@ class TestStringAnnot(unittest.TestCase):
             {'start': 37, 'end': 38, 'name': 'param_value', 'param_index': 1},
         ]
         self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_empty_arg(self):
+        t = annotate_string('FT', 'TIME()')
+        expect = [
+            {'start': 0, 'end': 6, 'name': 'op'},
+            {'start': 0, 'end': 4, 'name': 'op_name'},
+            {'start': 4, 'end': 6, 'name': 'invalid', 'reason': 'missing required parameter time' },
+            {'start': 5, 'end': 5, 'name': 'param_value', 'param_index': 0},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_no_args(self):
+        t = annotate_string('FT', 'END( )')
+        expect = [
+            {'start': 0, 'end': 6, 'name': 'op'},
+            {'start': 0, 'end': 3, 'name': 'op_name'},
+        ]
+        self.assertEqual(t, expect)
+    
+    def test_dsc_string_annot_arg_empty_whitespace(self):
+        t = annotate_string('FT', 'TIME(  )')
+        expect = [
+            {'start': 0, 'end': 8, 'name': 'op'},
+            {'start': 0, 'end': 4, 'name': 'op_name'},
+            {'start': 4, 'end': 8, 'name': 'invalid', 'reason': 'missing required parameter time' },
+            {'start': 7, 'end': 7, 'name': 'param_value', 'param_index': 0},
+        ]
+        self.assertEqual(t, expect)
 
 class cprt_tests(unittest.TestCase):
     
