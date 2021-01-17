@@ -18,6 +18,8 @@ See `docs/pyfmh3.md` for usage.
 Reads and writes FT dscs, with some limited framework for other games.  
 Plans are to document params for many ops so that a more user-friendly editor
 application can be made.  
+In its current state of completion, it is *not* particularly suitable for long-term stable data storage,
+but is enough to prototype a usable text-based dsc editor for example.  
 See `docs/pydsc.md` for more information and usage.
 
 　

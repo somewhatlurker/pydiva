@@ -14,6 +14,8 @@ Most code for the above is already complete with some limitations:
     already, but it lacks information necessary for parameter names, types, and op descriptions. Such information must
     be manually reverse-engineered and added to the data.
 
+Key areas for future expansion are properly supporting multiple games and adding conversions between them.
+
 ## Usage
 ### Op Representation
 Dsc ops are represented using the pydsc.DscOp class.
