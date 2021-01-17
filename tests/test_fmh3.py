@@ -1,5 +1,5 @@
 import unittest
-from os.path import join as joinpath, dirname
+from os.path import join as joinpath, dirname, exists as pathexists
 import json
 import hashlib
 from pydiva import pyfarc, pyfmh3
@@ -38,6 +38,13 @@ class TestFmhRead(unittest.TestCase):
     def test_read_x(self):
         fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_x', 'fontmap.fnm'))
         self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
+    
+    if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
+        def test_read_x_cprt(self):
+            fmh = fmh_from_file(joinpath(module_dir, '..', 'copyright!', 'fontmap_x.fnm'))
+            self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
+            fmh = fmh_from_file(joinpath(module_dir, '..', 'copyright!', 'fontmap_X_reversed_enrs_pof.fnm'))
+            self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
 
 class TestFmhWrite(unittest.TestCase):
     def test_write_aft(self):

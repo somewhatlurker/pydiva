@@ -2,8 +2,6 @@
 Farc format information for pyfarc
 """
 
-from construct import Struct, Const, Int32ub, Int32sb, RepeatUntil, CString, Pointer, Bytes, Padding, BitStruct, Flag, IfThenElse, Seek, Tell
-
 _construct_version = None
 try:
     from construct import __version__ as _construct_version
@@ -18,6 +16,7 @@ if _construct_version:
     if (_construct_version[0] < 2) or ((_construct_version[0] == 2) and (_construct_version[1] < 9)):
         raise Exception('Construct version too low, please install version 2.9+')
 
+from construct import Struct, Const, Int32ub, Int32sb, RepeatUntil, CString, Pointer, Bytes, Padding, BitStruct, Flag, IfThenElse, Seek, Tell
 
 _FArc_format = Struct(
     "signature" / Const(b'FArc'),
