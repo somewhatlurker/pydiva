@@ -14,7 +14,7 @@ Reads and writes fontmaps for FT and X series games.
 See `docs/pyfmh3.md` for usage.
 
 
-## pydsc
+## pydsc (alpha)
 Reads and writes FT dscs, with some limited framework for other games.
 Plans are to document params for many ops so that a more user-friendly editor
 application can be made.
