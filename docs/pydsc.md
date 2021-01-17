@@ -19,11 +19,11 @@ Most code for the above is already complete with some limitations:
 Dsc ops are represented using the pydsc.DscOp class.
 
 DscOp has the following variables:  
-`game`: name of the game to use data for (PDA12, F, F2, FT, PSP1, PSP2, X) -- only FT is fully supported currently  
-`op_name`: name of the op  
-`op_id`: game-specific ID of the op
-`param_values`: list of ordered parametere values for the op (will be automatically converted to appropriate types)
-`param_info`: information about the parameters available
+ * `game`: name of the game to use data for (PDA12, F, F2, FT, PSP1, PSP2, X) -- only FT is fully supported currently
+ * `op_name`: name of the op
+ * `op_id`: game-specific ID of the op
+ * `param_values`: list of ordered parametere values for the op (will be automatically converted to appropriate types)
+ * `param_info`: information about the parameters available
 
 `param_info` should be None, or a list where elements are dicts or None. If a list, length will be the number of params
 the op takes, like param_values.  
@@ -37,13 +37,13 @@ get a list of valid strings.
 Rather than ever using DscOp's __init__, you should prefer to use these, which will setup variables for you:  
 `DscOp.from_id(game='FT', op_id=0, param_values=[0])`  
 `DscOp.from_name(game='FT', op_name='TIME', param_values=[0])`  
-`DscOp.from_string(game='FT', op_str='TIME(0)')  
+`DscOp.from_string(game='FT', op_str='TIME(0)')`  
 `DscOp.read_from_stream(game='FT', s=stream, endian='little')`  
 param_values equal to None will generate dummy data (NOT default values)
 
 Similarly for the reverse, you can use these for string and stream operations:  
 `s = op.get_str(self, show_names=True, int_vars=False, hide_default=True)`  
-`s, tags = op.get_annotated_str(self, show_names=True, int_vars=False, hide_default=True)`
+`s, tags = op.get_annotated_str(self, show_names=True, int_vars=False, hide_default=True)`  
 `op.write_to_stream(s=stream, endian='little')`  
 
 　
@@ -52,11 +52,12 @@ Similarly for the reverse, you can use these for string and stream operations:
 `tags` are a list of dicts containing `name` (name/type of tag), `start` (index), `end` (index).  
 Possible tag names: 'op', 'op_name', 'param_name', 'param_value', 'invalid'.  
 'invalid' tags also contain `reason`.  
-'param_name' and 'param_value' tags also contain 'param_index', which is the index into param_info for its details.
+'param_name' and 'param_value' tags also contain 'param_index', which is the index into param_info for its details.  
+example tag dict: `{'name': 'param_name', 'start': 8, 'end': 13, 'param_index': 1{`
 
 Use these for operating with syntax on strings.
 
-To generate them for an arbitrary string without converting to DscOp, use `pydiva.pydsc_util.annotate_string`:
+To generate them for an arbitrary string without converting to DscOp, use `pydiva.pydsc_util.annotate_string`:  
 `annotate_string(game='FT', s='TIME(0)')`  
 For a DscOp, use `get_annotated_str` to obtain text and tags together.
 
