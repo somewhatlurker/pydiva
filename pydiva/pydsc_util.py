@@ -286,7 +286,7 @@ def annotate_string(game, s):
         
         ordered_pos = param_ordered_indices[op_param_cur_num]
         
-        # ordered_pos not int indicates an invalid param
+        # ordered_pos not int indicates an invalid param, ordered_pos contains the reason
         if type(ordered_pos) != int:
             tags += [{'start': op_param_cur_pos, 'end': op_param_cur_end_stripped, 'name': 'invalid', 'reason': str(ordered_pos)}]
         else:
@@ -309,8 +309,12 @@ def annotate_string(game, s):
                 value_start_pos = value_pos
                 value_end_pos = op_param_cur_end_stripped
                 
-                tags += [{'start': op_param_cur_pos, 'end': name_end_pos+1, 'name': 'param_name', 'param_index': ordered_pos}]
-                tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
+                # if param_info doesn't exist, we shouldn't have a name so output an error instead of the normal tag
+                if not param_info:
+                    tags += [{'start': op_param_cur_pos, 'end': value_end_pos, 'name': 'invalid', 'reason': 'unknown parameter name'}]
+                else:
+                    tags += [{'start': op_param_cur_pos, 'end': name_end_pos+1, 'name': 'param_name', 'param_index': ordered_pos}]
+                    tags += [{'start': value_start_pos, 'end': value_end_pos, 'name': 'param_value', 'param_index': ordered_pos}]
             
             # get and check type of arg
             forced_int = False
