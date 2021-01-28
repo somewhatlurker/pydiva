@@ -1,5 +1,6 @@
 import unittest
 from pydiva.util.stringenum import StringEnum
+from pydiva.util.stringbitfieldenum import StringBitfieldEnum
 from pydiva.util.scaledint import ScaledInt
 from pydiva.util.fixeddecimal import FixedDecimal
 from pydiva.util.divatime import DivaTime
@@ -51,6 +52,59 @@ class TestStringEnum(unittest.TestCase):
         self.assertEqual(i, j)
         
         j = string_enum_fruits(1)
+        self.assertNotEqual(i, j)
+
+string_bitfield_enum_fruits = type('string_bitfield_enum_fruits', (StringBitfieldEnum,), {'choices': ['apple', 'banana', 'pear', 'cantaloupe', 'watermelon', 'kiwi', 'mango']})
+
+class TestStringBitfieldEnum(unittest.TestCase):
+    
+    def test_int(self):
+        i = string_bitfield_enum_fruits(0)
+        self.assertEqual(i, 0)
+        i = string_bitfield_enum_fruits(2)
+        self.assertEqual(i, 2)
+        
+        # integer string
+        i = string_bitfield_enum_fruits('127')
+        self.assertEqual(i, 127)
+        
+        try: # exception for bad value
+            i = string_bitfield_enum_fruits(128)
+            self.assertTrue(False) # should never reach here
+        except Exception as e:
+            self.assertEqual(type(e), ValueError)
+    
+    def test_str(self):
+        i = string_bitfield_enum_fruits('apple')
+        self.assertEqual(i, 1)
+        self.assertEqual(repr(i), 'string_bitfield_enum_fruits(apple)')
+        self.assertEqual(str(i), 'apple')
+        i = string_bitfield_enum_fruits('pear')
+        self.assertEqual(i, 4)
+        self.assertEqual(repr(i), 'string_bitfield_enum_fruits(pear)')
+        self.assertEqual(str(i), 'pear')
+        i = string_bitfield_enum_fruits('mango')
+        self.assertEqual(i, 64)
+        self.assertEqual(repr(i), 'string_bitfield_enum_fruits(mango)')
+        self.assertEqual(str(i), 'mango')
+        
+        i = string_bitfield_enum_fruits('apple|pear|mango')
+        self.assertEqual(i, 1+4+64)
+        self.assertEqual(repr(i), 'string_bitfield_enum_fruits(apple|pear|mango)')
+        self.assertEqual(str(i), 'apple|pear|mango')
+        
+        try: # exception for bad choice
+            i = string_bitfield_enum_fruits('lemon')
+            self.assertTrue(False) # should never reach here
+        except Exception as e:
+            self.assertEqual(type(e), ValueError)
+    
+    def test_eq(self):
+        i = string_bitfield_enum_fruits('apple')
+        j = string_bitfield_enum_fruits(1)
+        self.assertEqual(i, j)
+        
+        j = string_bitfield_enum_fruits(2)
         self.assertNotEqual(i, j)
 
 scaled_int_0_1000 = type('scaled_int_0_1000', (ScaledInt,), {'value_min': 0, 'value_max': 1000})
@@ -195,29 +249,29 @@ class TestDivaTome(unittest.TestCase):
     def test_str(self):
         # should set from timecode
         i = DivaTime('10') # 10s
-        self.assertEqual(i, 10000000)
+        self.assertEqual(i, 1000000)
         i = DivaTime('-10')
-        self.assertEqual(i, -10000000)
+        self.assertEqual(i, -1000000)
         
         i = DivaTime('100') # 100s
-        self.assertEqual(i, 100000000)
+        self.assertEqual(i, 10000000)
         i = DivaTime('-100')
-        self.assertEqual(i, -100000000)
+        self.assertEqual(i, -10000000)
         
         i = DivaTime('1:07') # 1m 7s
-        self.assertEqual(i, 67000000)
+        self.assertEqual(i, 6700000)
         i = DivaTime('-1:7')
-        self.assertEqual(i, -67000000)
+        self.assertEqual(i, -6700000)
         
         i = DivaTime('1:00:10') # 1h 10s
-        self.assertEqual(i, 3610000000)
+        self.assertEqual(i, 361000000)
         i = DivaTime('-1:00:10')
-        self.assertEqual(i, -3610000000)
+        self.assertEqual(i, -361000000)
         
         i = DivaTime('0:00:2.4') # 2.4s
-        self.assertEqual(i, 2400000)
+        self.assertEqual(i, 240000)
         i = DivaTime('-2.4')
-        self.assertEqual(i, -2400000)
+        self.assertEqual(i, -240000)
         
         # exceptions for bad input
         try:
