@@ -718,26 +718,28 @@ dsc_op_db = [
     {
         'name': 'EDIT_MODE_SELECT',
         'desc': 'Start or end a special chart section (challenge time, etc) in an edit',
-        'info_F2': {
+        'info_default': {
             'id': 82,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': int}
+                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
             ]
         },
-        'info_FT': {
-            'id': 82,
-            'param_cnt': 1,
-            'param_info': [
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum_ft', (StringBitfieldEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end']})}
-            ]
+        'info_PDA12': {
+            'id': None,
+            'param_cnt': None
         },
-        'info_F': {
-            'id': 82,
-            'param_cnt': 1,
-            'param_info': [
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum_f', (StringBitfieldEnum,), {'choices': ['unk0', 'chance_start', 'unk2', 'chance_end', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
-            ]
+        'info_PSP1': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_PSP2': {
+            'id': None,
+            'param_cnt': None
+        },
+        'info_X': {
+            'id': None,
+            'param_cnt': None
         }
     },
     {
@@ -1437,23 +1439,7 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, apparently for easy you need both easy and easy_2)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'easy_2']})}, # , 'normal_2', 'hard_2', 'extreme_2'
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': int}
-            ]
-        },
-        'info_FT': {
-            'id': 26,
-            'param_cnt': 2,
-            'param_info': [
-                {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, apparently for easy you need both easy and easy_2)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'easy_2']})}, # , 'normal_2', 'hard_2', 'extreme_2'
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum_ft', (StringBitfieldEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end']})}
-            ]
-        },
-        'info_F': {
-            'id': 26,
-            'param_cnt': 2,
-            'param_info': [
-                {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, apparently for easy you need both easy and easy_2)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'easy_2']})}, # , 'normal_2', 'hard_2', 'extreme_2'
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum_f', (StringBitfieldEnum,), {'choices': ['unk0', 'chance_start', 'unk2', 'chance_end', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
+                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
             ]
         },
         'info_PDA12': {
