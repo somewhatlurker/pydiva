@@ -1438,7 +1438,7 @@ dsc_op_db = [
             'id': 26,
             'param_cnt': 2,
             'param_info': [
-                {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, apparently for easy you need both easy and easy_2)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'easy_2']})}, # , 'normal_2', 'hard_2', 'extreme_2'
+                {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, and apparently ex_extreme should actually be easy_2 but I don\'t see why that would be the case)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'ex_extreme']})}, # , 'easy_2', 'normal_2', 'hard_2', 'extreme_2'
                 {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end', 'unk3', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
             ]
         },
