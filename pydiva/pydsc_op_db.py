@@ -2036,13 +2036,13 @@ dsc_op_db = [
             'param_cnt': 7,
             'param_info': [
                 {'name': 'type', 'desc': 'note type id', 'required': True, 'type': type('target_type_ft_enum', (StringEnum,), {'choices': [
-                    'tri', 'circ', 'cross', 'square',
-                    'tri_hold', 'circ_hold', 'cross_hold', 'square_hold',
+                    'triangle', 'circle', 'cross', 'square',
+                    'triangle_hold', 'circle_hold', 'cross_hold', 'square_hold',
                     'random', 'random_hold', 'repeat',
                     'unimp_star', 'slide_l', 'slide_r',
                     'unimp_chainstar', 'chainslide_l', 'chainslide_r',
                     'unk17',
-                    'tri_success', 'circ_success', 'cross_success', 'square_success',
+                    'triangle_success', 'circle_success', 'cross_success', 'square_success',
                     'unimp_star_success', 'slide_l_success', 'slide_r_success'
                 ]})},
                 {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},

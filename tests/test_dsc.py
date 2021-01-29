@@ -336,7 +336,7 @@ class TestDscString(unittest.TestCase):
             '  MIKU_MOVE(chara=0, x=1.000, y=2.000, z=3.000);',
             '  HAND_SCALE(chara=0, hand=left, scale=122%);',
             '  MIKU_DISP(chara=0, visible=True);',
-            '  TARGET(type=tri_hold, pos_x=69.000, pos_y=420.000, angle=39.000, dist=1.000, amp=2.000, freq=3);',
+            '  TARGET(type=triangle_hold, pos_x=69.000, pos_y=420.000, angle=39.000, dist=1.000, amp=2.000, freq=3);',
             'PV_BRANCH_MODE(normal);',
             '    CHANGE_FIELD(2);',
             'TIME(1);',
