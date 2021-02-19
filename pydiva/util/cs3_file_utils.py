@@ -6,7 +6,7 @@ other stuff is probably wrong, but the intent is that is can be expanded in the
 future.
 """
 
-from construct import Adapter, Struct, Tell, Const, Rebuild, Int32ub, Padding, Bytes, Default, IfThenElse, If, Seek, Probe
+from construct import Adapter, Struct, Tell, Const, Rebuild, Int32ub, Int32ul, Padding, Bytes, Default, If, Seek, Probe
 
 def gen_relocation_data(offsets):
     """
@@ -108,7 +108,7 @@ class RelocationDataAdapter(Adapter):
         
         return gen_relocation_data(obj)
 
-def gen_relocation_struct(int_type, pointer_type, depth):
+def gen_relocation_struct(pointer_type, depth):
     """
     Generates a Construct struct for a POFx (relocation) section.
     
@@ -118,30 +118,34 @@ def gen_relocation_struct(int_type, pointer_type, depth):
     ```
     """
     
+    int_type = Int32ul # seems to use little endian in F2nd fontmap
+    
     return Struct(
         "pointer_offset" / Tell,
         "signature" / Const(b'POF0' if pointer_type.sizeof() == 4 else b'POF1'),
-        "section_size" / Rebuild(int_type, lambda this: relocation_data_len(this.data)),
-        "data_pointer" / Default(int_type, 32),
-        "flags" / Const(0x18000000 if int_type == Int32ub else 0x10000000, int_type),
-        "depth" / Rebuild(int_type, depth),
-        "data_size" / Rebuild(int_type, lambda this: this.section_size),
+        "section_size" / Rebuild(Int32ul, lambda this: relocation_data_len(this.data)),
+        "data_pointer" / Default(Int32ul, 32),
+        "flags" / Const(0x00000018 if int_type == Int32ub else 0x10000000, int_type),
+        "depth" / Rebuild(Int32ul, depth),
+        "data_size" / Rebuild(Int32ul, lambda this: this.section_size),
         Padding(lambda this: this.data_pointer - 24),
         Seek(lambda this: this.data_pointer + this.pointer_offset),
         "data" / RelocationDataAdapter(Bytes(lambda this: this.data_size))
     )
 
-def gen_eofc_struct(int_type, depth, fix_parent_size=None):
+def gen_eofc_struct(depth, fix_parent_size=None):
     """Generates a Construct struct for an EOFC (end of file) section."""
+    
+    int_type = Int32ul # seems to use little endian in F2nd fontmap
     
     return Struct(
         "pointer_offset" / Tell,
         "signature" / Const(b'EOFC'),
-        "section_size" / Rebuild(int_type, 0),
-        "data_pointer" / Rebuild(int_type, 32),
-        "flags" / Const(0x18000000 if int_type == Int32ub else 0x10000000, int_type),
-        "depth" / Rebuild(int_type, depth),
-        "data_size" / Rebuild(int_type, 0),
+        "section_size" / Rebuild(Int32ul, 0),
+        "data_pointer" / Rebuild(Int32ul, 32),
+        "flags" / Const(0x00000018 if int_type == Int32ub else 0x10000000, int_type),
+        "depth" / Rebuild(Int32ul, depth),
+        "data_size" / Rebuild(Int32ul, 0),
         Padding(lambda this: this.data_pointer - 24),
         Seek(lambda this: this.data_pointer + this.pointer_offset),
         Rebuild(Bytes(lambda this: this.data_size), b''),
@@ -185,12 +189,12 @@ def gen_section_struct(int_type, pointer_type, signature, depth, data_size=0, da
             "pointer_offset" / Tell,
             "signature" / Const(signature.encode('ascii')),
             "section_size_offset" / Tell, # for fixing section_size later 
-            "section_size" / Default(int_type, 0),
-            "data_pointer" / Default(int_type, 32),
+            "section_size" / Default(Int32ul, 0),
+            "data_pointer" / Default(Int32ul, 32),
             #Probe(),
-            "flags" / Const(0x18000000 if int_type == Int32ub else 0x10000000, int_type),
-            "depth" / Rebuild(int_type, depth),
-            "data_size" / Rebuild(int_type, data_size),
+            "flags" / Const(0x00000018 if int_type == Int32ub else 0x10000000, int_type),
+            "depth" / Rebuild(Int32ul, depth),
+            "data_size" / Rebuild(Int32ul, data_size),
             Padding(lambda this: this.data_pointer - 24),
             Seek(lambda this: this.data_pointer + this.pointer_offset),
             "data" / Default(data_subcon, b''),
@@ -198,11 +202,11 @@ def gen_section_struct(int_type, pointer_type, signature, depth, data_size=0, da
             "extra_sections" / Struct(
                 # I think enrs may come before or after relocation(?), so just try reading it from both
                 gen_section_struct(int_type, pointer_type, 'ENRS', depth, optional=True) if enrs else Tell,
-                "POF" / gen_relocation_struct(int_type, pointer_type, depth) if relocation else Tell,
+                "POF" / gen_relocation_struct(pointer_type, depth) if relocation else Tell,
                 gen_section_struct(int_type, pointer_type, 'ENRS', depth, optional=True) if enrs else Tell,
                 "end_offset" / Tell,
                 Seek(lambda this: this._.section_size_offset),
-                Rebuild(int_type, lambda this: this.end_offset - (this._.data_pointer + this._.pointer_offset)),
+                Rebuild(Int32ul, lambda this: this.end_offset - (this._.data_pointer + this._.pointer_offset)),
                 Seek(lambda this: this.end_offset)
             ),
         ))
@@ -273,7 +277,7 @@ def gen_cs3_sections(int_type, pointer_type, sections, depth=0):
         cs = gen_cs3_sections(int_type, pointer_type, s.get('child_sections', []), depth + 1)
         ss += cs
         
-        ss += "EOFC" / gen_eofc_struct(int_type, depth, s['signature'])
+        ss += "EOFC" / gen_eofc_struct(depth, s['signature'])
         struct += s['signature'] / ss
     
     return struct
@@ -286,4 +290,4 @@ def gen_cs3_file(int_type, pointer_type, sections):
     Same as gen_cs3_sections but with an end of file section appended.
     """
     
-    return gen_cs3_sections(int_type, pointer_type, sections) + gen_eofc_struct(int_type, 0)
+    return gen_cs3_sections(int_type, pointer_type, sections) + gen_eofc_struct(0)

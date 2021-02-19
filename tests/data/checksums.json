@@ -8,10 +8,12 @@
     "fontmap_aft.farc": "534632f0a465188f4958e85c0f701810a71ffa37",
     "fontmap_m39.farc": "1facdf63b22ccdfa2efa849aab764dea7f1cfd2e",
     "fontmap_x.farc": "61d09d02ad0cf585b2f2bbaeca9faa31e65f5a00",
-    "fontmap_ref_json.farc": "95bb8cad4ad830a15981c39d4bf4f4d09e646e08",
+    "fontmap_f2.farc": "cd9161c746c47b42b9773a2d47c3e76e375c2688",
+    "fontmap_ref_json.farc": "3a13d7f4af955dc5dbf721f2c62fc64f77222321",
     "fontmap_aft.bin": "2c45b112cc3b9a677db36c4f85ffbde1bbac14c3",
     "fontmap_m39.bin": "44338cd5feb0092a998892551c4750b5bf3d3235",
     "fontmap_x.fnm": "26ecd9d0638b5a411ae24930968e21d50a710136",
+    "fontmap_f2.fnm": "116884b7e2ce613e577ad151ec86b057367786e7",
     "cli_pack.farc": "86f71e388bc1f0c4de0871cd25bc7260a3732ce8",
     "cli_pack_c_e.farc": "c0afe3b3e2aa1fc9e0c61988fd30ce65bfe6b783",
     "cli_unpack.farc": "86f71e388bc1f0c4de0871cd25bc7260a3732ce8"

@@ -87,6 +87,9 @@ def to_stream(data, stream, no_copy=False):
         font['chars_count'] = len(font['chars'])
     fonts = [{'data': font} for font in fonts]
     
+    global _fonts_pointers_min_offset
+    _fonts_pointers_min_offset = fmh3_type['fonts_pointers_min_offset']
+    
     address_size = fmh3_type['address_size']
     _set_font_pointers(fonts, address_size)
     _set_char_pointers(fonts, address_size)
@@ -162,8 +165,25 @@ def from_stream(s):
     check_fmh3_type(magic_str)
     fmh3_type = _fmh3_types[magic_str]
     
+    if 'alternate_type_checks' in fmh3_type:
+        for t in fmh3_type['alternate_type_checks']:
+            match = True
+            for c in t['checks']:
+                s.seek(pos+c['offset'])
+                if not int.from_bytes(s.read(1), byteorder='little') & c['mask']:
+                    match = False
+                    break
+            
+            if match: # passed all checks, to this is actually the alt type
+                magic_str = t['type']
+                fmh3_type = _fmh3_types[magic_str]
+                break
+    s.seek(pos)
+    
     fmhdata = fmh3_type['struct'].parse_stream(s)
-    return _parsed_to_dict(fmhdata, fmh3_type['nest_fmh3_data'])
+    res = _parsed_to_dict(fmhdata, fmh3_type['nest_fmh3_data'])
+    res['fmh3_type'] = magic_str # force type to what we already determined
+    return res
 
 def from_bytes(b):
     """Converts fontmap data from bytes to a dictionary."""

@@ -39,12 +39,20 @@ class TestFmhRead(unittest.TestCase):
         fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_x', 'fontmap.fnm'))
         self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
     
+    def test_read_f2(self):
+        fmh = fmh_from_file(joinpath(module_dir, 'data', 'fontmap_f2', 'fontmap.fnm'))
+        self.assertEqual(fmh, json.loads(refdata['fontmap_f2.json']))
+    
     if pathexists(joinpath(module_dir, '..', 'copyright!', 'script')):
         def test_read_x_cprt(self):
             fmh = fmh_from_file(joinpath(module_dir, '..', 'copyright!', 'fontmap_x.fnm'))
             self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
             fmh = fmh_from_file(joinpath(module_dir, '..', 'copyright!', 'fontmap_X_reversed_enrs_pof.fnm'))
             self.assertEqual(fmh, json.loads(refdata['fontmap_x.json']))
+
+        def test_read_f2_cprt(self):
+            fmh = fmh_from_file(joinpath(module_dir, '..', 'copyright!', 'fontmap_f2.fnm'))
+            self.assertEqual(fmh, json.loads(refdata['fontmap_f2.json']))
 
 class TestFmhWrite(unittest.TestCase):
     def test_write_aft(self):
@@ -64,3 +72,9 @@ class TestFmhWrite(unittest.TestCase):
         b = pyfmh3.to_bytes(fmh)
         c = hashlib.sha1(b).hexdigest()
         self.assertEqual(c, checksums['fontmap_x.fnm'])
+    
+    def test_write_f2(self):
+        fmh = json.loads(refdata['fontmap_f2.json'])
+        b = pyfmh3.to_bytes(fmh)
+        c = hashlib.sha1(b).hexdigest()
+        self.assertEqual(c, checksums['fontmap_f2.fnm'])

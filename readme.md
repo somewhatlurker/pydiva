@@ -10,7 +10,7 @@ See `docs/pyfarc.md` for usage.
 
 
 ## pyfmh3
-Reads and writes fontmaps for FT and X series games.
+Reads and writes fontmaps for F2nd (BE only), FT and X series games.
 See `docs/pyfmh3.md` for usage.
 
 　

@@ -7,6 +7,9 @@ fontmap_x.farc:   fontmap_x packed into a compressed and encrypted FARC
 fontmap_m39:      a self-generated M39s fontmap
 fontmap_m39.farc: fontmap_m39 packed into a compressed and encrypted FT FARC
 
+fontmap_f2:       a self-generated F2nd (BE) fontmap
+fontmap_f2.farc:  fontmap_f2 packed into a compressed and encrypted FARC
+
 
 fontmap_ref_json.farc: reference json with indent=1 for all fontmaps (in FArC for compression)
 

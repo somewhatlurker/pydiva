@@ -137,6 +137,14 @@ class TestFarcPacking(unittest.TestCase):
         self.assertEqual(c, checksums['fontmap_x.farc'])
         f = files_from_farc_bytes(b)
         self.assertEqual(f, file)
+    
+    def test_fontmap_f2(self):
+        file = files_from_dir(joinpath(module_dir, 'data', 'fontmap_f2'))
+        b = farc_bytes_from_files(file, 'FARC', 16, True, True)
+        c = hashlib.sha1(b).hexdigest()
+        self.assertEqual(c, checksums['fontmap_f2.farc'])
+        f = files_from_farc_bytes(b)
+        self.assertEqual(f, file)
 
 
 class TestFarcFlags(unittest.TestCase):

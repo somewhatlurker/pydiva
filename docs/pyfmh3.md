@@ -1,14 +1,14 @@
 pyfmh3 Documentation
 ====================
 
-pyfmh3 supports FMH3 files from FT series games (AFT/FT/M39) and FMH3 in FONM container for X games.
+pyfmh3 supports FMH3 files from FT series games (AFT/FT/M39) and FMH3 in FONM container for F2nd (BE only) and X games.
 
 ## Usage
 ### Dictionary Representation
 The main API makes use of nested python dictionaries and lists to represent data:
 ```
 {
-    'fmh3_type': 'FMH3',             # format-specific signature (FMH3/FONM)
+    'fmh3_type': 'FMH3',             # format-specific signature (FMH3/FONM/FONM_F2)
     'fonts': [                       # list of fonts in the fontmap
         {                            # each font is a dictionary
             'id': 0,
@@ -71,4 +71,5 @@ created during processing. Only enable this if you won't reuse the dictionary.
 FMH3 format for FT series games is described in `docs/fmh3_format.txt`, but the Struct in `pydiva/pyfmh3_formats.py` is
 probably just as easy to understand.
 X is similar but some fields become 64 bits long and it's encapsulated in an F2nd/X style file with FONM magic.  
+F2nd (BE) is also similar, but the FMH3 data is big endian.
 MikuMikuModel serves as a good reference for how the sectioned F2nd/X files work.
