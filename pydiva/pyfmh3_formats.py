@@ -16,10 +16,10 @@ if _construct_version:
     if (_construct_version[0] < 2) or ((_construct_version[0] == 2) and (_construct_version[1] < 9)):
         raise Exception('Construct version too low, please install version 2.9+')
 
-from construct import Struct, Computed, Tell, Const, Padding, Padded, Pointer, RepeatUntil, Byte, Int16ul, Flag, Rebuild, If, Int32ub, Seek, Int32ul, Int64ul
+from construct import Struct, Computed, Tell, Const, Padding, Padded, Pointer, RepeatUntil, Byte, Int16ul, Int16ub, Flag, Rebuild, If, Int32ub, Seek, Int32ul, Int64ul
 from pydiva.util.cs3_file_utils import RelocationPointerAdapter, gen_relocation_struct, relocation_data_len, gen_eofc_struct, gen_cs3_file
 
-def _gen_fmh3_struct(int_type, pointer_type, addr_mode='rel'):
+def _gen_fmh3_struct(int_type, pointer_type, codepoint_type, addr_mode='rel'):
     return Struct(
         "pointer_offset" / (Computed(0) if addr_mode == 'abs' else Tell),
         "signature" / Const(b'FMH3'),
@@ -43,7 +43,7 @@ def _gen_fmh3_struct(int_type, pointer_type, addr_mode='rel'):
                 "chars_count" / int_type,
                 "chars_pointer" / pointer_type,
                 "chars" / Pointer(lambda this: this.chars_pointer + this._._.pointer_offset, RepeatUntil(lambda obj,lst,ctx: ctx._index >= ctx.chars_count - 1, Struct(
-                    "codepoint" / Int16ul,
+                    "codepoint" / codepoint_type,
                     "halfwidth" / Flag,
                     Padding(1),
                     "tex_col" / Byte,
@@ -58,7 +58,7 @@ def _gen_fmh3_struct(int_type, pointer_type, addr_mode='rel'):
 _fmh3_types = {
     'FMH3': {
         'remarks': 'unencapsulated FT fontmap',
-        'struct': _gen_fmh3_struct(Int32ul, Int32ul),
+        'struct': _gen_fmh3_struct(Int32ul, Int32ul, Int16ul),
         'address_size': 4,
         'fonts_pointers_min_offset': 32,
         'nest_fmh3_data': False,
@@ -68,7 +68,7 @@ _fmh3_types = {
         'struct': gen_cs3_file(Int32ul, Int64ul, [{
             'signature': 'FONM',
             'data_size': lambda this: this.data_size,
-            'data_subcon': _gen_fmh3_struct(Int32ul, RelocationPointerAdapter(Int64ul)),
+            'data_subcon': _gen_fmh3_struct(Int32ul, RelocationPointerAdapter(Int64ul), Int16ul),
             'enrs': True,
             'relocation': True
         }]),
@@ -82,7 +82,7 @@ _fmh3_types = {
         'struct': gen_cs3_file(Int32ub, Int32ub, [{
             'signature': 'FONM',
             'data_size': lambda this: this.data_size,
-            'data_subcon': _gen_fmh3_struct(Int32ub, RelocationPointerAdapter(Int32ub), addr_mode='abs'),
+            'data_subcon': _gen_fmh3_struct(Int32ub, RelocationPointerAdapter(Int32ub), Int16ub, addr_mode='abs'),
             'enrs': False,
             'relocation': True
         }]),
