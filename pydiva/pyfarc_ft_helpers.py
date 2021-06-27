@@ -41,7 +41,7 @@ def _needs_FT_decryption(s):
     return False
 
 def _is_FT_FARC(s):
-    """Returns whether the FARC file stream is in FT format"""
+    """Returns whether the FARC file stream is in FT (or FT-based) format"""
     
     og_pos = s.tell()
     magic_str = s.read(4).decode('ascii')
@@ -58,14 +58,14 @@ def _is_FT_FARC(s):
     format = s.read(4)
     s.seek(og_pos)
     
-    if format == b'\x00\x00\x00\x01':
+    if format != b'\x00\x00\x00\x00':
         return True
     
     return False
 
-def _decrypt_FT_FARC_header(s):
+def _decrypt_FT_FARC_header(s, key):
     """
-    Decrypts header of FT FARC from stream and returns a new stream containing entire farc
+    Decrypts header of FT (or FT-based) FARC from stream and returns a new stream containing entire farc
     """
     
     if not _is_FT_FARC(s):
@@ -83,7 +83,7 @@ def _decrypt_FT_FARC_header(s):
     old_header_size = int.from_bytes(s.read(4), byteorder='big', signed=False)
     other_plaintext_header = s.read(8) # other plaintext header stuff
     
-    cipher = AES.new(b'\x13\x72\xD5\x7B\x6E\x9E\x31\xEB\xA2\x39\xB8\x3C\x15\x57\xC6\xBB', AES.MODE_CBC, iv=s.read(16))
+    cipher = AES.new(key, AES.MODE_CBC, iv=s.read(16))
     header_data = cipher.decrypt(s.read(old_header_size - 16 - 8)) # 16 is for IV, 8 is for plaintext part of header
     header_data = unpad(header_data, 16, 'pkcs7')
     new_header_size = len(header_data) + 8
@@ -101,9 +101,9 @@ def _decrypt_FT_FARC_header(s):
     out.seek(0)
     return out
 
-def _encrypt_FT_FARC_header(instream, outstream):
+def _encrypt_FT_FARC_header(instream, outstream, key):
     """
-    Encrypts header of FT FARC from instream and writes entire FARC to outstream
+    Encrypts header of FT (or FT-based) FARC from instream and writes entire FARC to outstream
     Ensure input FARC has enough space for IV and AES padding after the header
     """
     
@@ -135,7 +135,7 @@ def _encrypt_FT_FARC_header(instream, outstream):
     else:
         iv = token_bytes(16)
     outstream.write(iv)
-    cipher = AES.new(b'\x13\x72\xD5\x7B\x6E\x9E\x31\xEB\xA2\x39\xB8\x3C\x15\x57\xC6\xBB', AES.MODE_CBC, iv=iv)
+    cipher = AES.new(key, AES.MODE_CBC, iv=iv)
     outstream.write(cipher.encrypt(header_data))
     
     # resync streams (read old_header_size but wrote new_header_size)

@@ -192,7 +192,7 @@ def to_stream(data, stream, no_copy=False):
     
     if flags['encrypted'] and farc_type['encryption_type'] == 'FT':
         stream.seek(0)
-        _encrypt_FT_FARC_header(stream, og_stream)
+        _encrypt_FT_FARC_header(stream, og_stream, farc_type['encryption_key'])
         stream.close()
 
 def to_bytes(data, no_copy=False):
@@ -229,10 +229,10 @@ def _parsed_to_dict(farcdata, farc_type, files_whitelist=None):
             
             if flags.get('encrypted'):
                 if farc_type['encryption_type'] == 'DT':
-                    cipher = AES.new(b'project_diva.bin', AES.MODE_ECB)
+                    cipher = AES.new(farc_type['encryption_key'], AES.MODE_ECB)
                     data = cipher.decrypt(data)
                 elif farc_type['encryption_type'] == 'FT':
-                    cipher = AES.new(b'\x13\x72\xD5\x7B\x6E\x9E\x31\xEB\xA2\x39\xB8\x3C\x15\x57\xC6\xBB', AES.MODE_CBC, iv=data[:16])
+                    cipher = AES.new(farc_type['encryption_key'], AES.MODE_CBC, iv=data[:16])
                     data = cipher.decrypt(data[16:])
             
             if flags.get('compressed') and (farc_type['compression_forced'] or (f['uncompressed_size'] != f['compressed_size'])):
@@ -289,7 +289,7 @@ def from_stream(s, files_whitelist=None):
     close_ft_stream = False
     if _is_FT_FARC(s):
         farc_type = _farc_types['FARC_FT']
-        decrypt_stream = _decrypt_FT_FARC_header(s)
+        decrypt_stream = _decrypt_FT_FARC_header(s, farc_type['encryption_key'])
         if decrypt_stream:
             s = decrypt_stream
             close_ft_stream = True
