@@ -22,7 +22,7 @@ additionally, an id of None indicates an unsupported opcode
 
 from pydiva.util.stringenum import StringEnum
 from pydiva.util.stringbitfieldenum import StringBitfieldEnum
-from pydiva.util.divatime import DivaTime
+from pydiva.util.divatime import DivaTime, LongLengthTime
 from pydiva.util.fixeddecimal import FixedDecimal
 from pydiva.util.scaledint import ScaledInt
 
@@ -1439,7 +1439,7 @@ dsc_op_db = [
             'param_cnt': 2,
             'param_info': [
                 {'name': 'difficulty', 'desc': 'difficulty to affect (not really sure how this works, and apparently ex_extreme should actually be easy_2 but I don\'t see why that would be the case)', 'required': True, 'type': type('mode_select_difficulty_enum', (StringBitfieldEnum,), {'choices': ['easy', 'normal', 'hard', 'extreme', 'ex_extreme']})}, # , 'easy_2', 'normal_2', 'hard_2', 'extreme_2'
-                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end', 'unk4', 'unk5', 'unk6', 'unk7', 'technical_start', 'technical_end']})}
+                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['unk0', 'challenge_start', 'unk2', 'challenge_end']})}
             ]
         },
         'info_PDA12': {
@@ -1449,7 +1449,19 @@ dsc_op_db = [
         'info_PSP1': {
             'id': 26,
             'param_cnt': 1
-        }
+        },
+        'info_F': {
+            'id': 26,
+            'param_cnt': 2,
+            'param_info': [
+                # TODO: Understand how StringBitfieldEnum works and change this
+                {'name': 'difficulty', 'desc': 'difficulty to affect', 'required': True, 'type': int},
+                # unk06 and unk07 aren't named NONE because they do appear to have a function in game
+                # although what it does it unknown to me
+                # maybe its an alternative for 8/9 (techzone_start/techzone_end) for non-31 difficulty values
+                {'name': 'mode', 'desc': 'mode to enter', 'required': True, 'type': type('mode_select_mode_enum', (StringEnum,), {'choices': ['NONE01', 'chance_start', 'NONE02', 'chance_end', 'NONE04', 'NONE05', 'unk06', 'unk07', 'techzone_start', 'techzone_end']})}
+            ]
+        },
     },
     {
         'name': 'MOUTH_ANIM',
@@ -2063,7 +2075,29 @@ dsc_op_db = [
         },
         'info_F': {
             'id': 6,
-            'param_cnt': 11
+            'param_cnt': 11,
+            'param_info': [
+                {'name': 'type', 'desc': 'note type id', 'required': True, 'type': type('target_type_f_enum', (StringEnum,), {'choices': [
+                    'triangle', 'circle', 'cross', 'square',
+                    'up', 'right', 'down', 'left',
+                    'long_triangle', 'long_circle', 'long_cross', 'long_square', 
+                    'star',
+                    'NONE01', 'NONE02',
+                    'chance_star', 'edit_chance_star'
+                ]})},
+                {'name': 'long_length', 'desc': 'length of the long note', 'required': True, 'type': LongLengthTime},
+                # TODO: Make a class (derived from bool) to store this
+                # -1 = false, 1 = true
+                {'name': 'long_is_end', 'desc': 'flag to tell the game if this is a long note end', 'required': True, 'type': int},
+                {'name': 'pos_x', 'desc': 'x position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'pos_y', 'desc': 'y position', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'angle', 'desc': 'fly angle', 'required': True, 'type': fixeddecimal_3},
+                {'name': 'freq', 'desc': 'flying wave frequency', 'required': False, 'default': -2, 'type': int},
+                {'name': 'dist', 'desc': 'fly distance', 'required': False, 'default': fixeddecimal_3(300000), 'type': fixeddecimal_3},
+                {'name': 'amp', 'desc': 'flying wave amplitude', 'required': False, 'default': fixeddecimal_3(500), 'type': fixeddecimal_3},
+                {'name': 'tft', 'desc': 'target flying time, used to sync notes (if BAR_TIME_SET is missing) and sync techzones', 'required': True, 'type': int},
+                {'name': 'bar', 'desc': 'looks like some bar information for syncing purposes?', 'required': False, 'default': 3, 'type': int}
+            ]
         }
     },
     {

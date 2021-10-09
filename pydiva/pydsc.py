@@ -288,23 +288,25 @@ def from_stream(s, game_hint=None):
     """
     
     og_pos = s.tell()
+    script_signature = s.read(4)
     
     if game_hint:
         game = game_hint
     else:
         game = None
         for g, type_info in _dsc_types.items():
-            if type_info['header_regex'].match(s.read(len(type_info['header_regex'].pattern))):
+            if script_signature in type_info['signatures']:
                 game = g
                 break
     
+    print(game)
     if not game:
         raise UnsupportedDscGameException('Couldn\'t identify file type')
     
     out = []
     
     while True:
-        op = DscOp.read_from_stream('FT', s, 'little')
+        op = DscOp.read_from_stream(game, s, 'little')
         out += [op]
         
         if op.op_id == 0: # END
