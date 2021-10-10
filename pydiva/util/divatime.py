@@ -151,17 +151,27 @@ class DivaTime(int):
     def __rfloordiv__(x, y):
         return x.__class__._arith(super().__rfloordiv__, x, y)
 
-# I have no understanding of the code I just read here so this is probably gonna be a little hacky
 class LongLengthTime(DivaTime):
-
     @classmethod
     def __new__(cls, type, value):
         """Initialise an instance (eg. from another instance, an integer, or a string)."""
-        # Only this has apparently worked well
-        # That's great
-        if value == -1:
-            value = 0
-        elif value == 0:
-            value = -1
-              
+        
         return cls._new_int_value(value)
+    
+    @classmethod
+    def _new_int_value(cls, value):
+        """Set the current value (eg. from another instance, an integer, or a string)."""
+        
+        if type(value) == str:
+            if value.lower() == 'none':
+                value = -1
+        
+        return super()._new_int_value(value)
+    
+    def __str__(self):
+        value = int(self)
+        
+        if value == -1:
+            return 'none'
+        else:
+            return super().__str__()

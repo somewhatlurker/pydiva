@@ -2081,7 +2081,7 @@ dsc_op_db = [
                     'triangle', 'circle', 'cross', 'square',
                     'up', 'right', 'down', 'left',
                     'long_triangle', 'long_circle', 'long_cross', 'long_square', 
-                    'star', 'vita_long_star', 'NONE01',
+                    'star', 'vita_long_star', 'vita_double_star',
                     'chance_star', 'edit_chance_star'
                 ]})},
                 {'name': 'long_length', 'desc': 'length of the long note', 'required': True, 'type': LongLengthTime},
