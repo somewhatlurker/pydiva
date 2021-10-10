@@ -2081,8 +2081,7 @@ dsc_op_db = [
                     'triangle', 'circle', 'cross', 'square',
                     'up', 'right', 'down', 'left',
                     'long_triangle', 'long_circle', 'long_cross', 'long_square', 
-                    'star',
-                    'NONE01', 'NONE02',
+                    'star', 'vita_long_star', 'NONE01',
                     'chance_star', 'edit_chance_star'
                 ]})},
                 {'name': 'long_length', 'desc': 'length of the long note', 'required': True, 'type': LongLengthTime},
@@ -2120,12 +2119,14 @@ dsc_op_db = [
     },
     {
         'name': 'TARGET_FLYING_TIME',
-        'desc': 'Set the flying in time for rhythm game notes.',
+        'desc': 'Set the flying time in ms for rhythm game notes.',
         'info_default': {
             'id': 58,
             'param_cnt': 1,
             'param_info': [
-                {'name': 'time', 'desc': 'flying time', 'required': True, 'type': DivaTime}
+                # This parameter was being mistakenly read as DivaTime
+                # Weird enough this is the only place where they use (rounded up) milliseconds
+                {'name': 'time', 'desc': 'flying time', 'required': True, 'type': int}
             ]
         },
         'info_PDA12': {
